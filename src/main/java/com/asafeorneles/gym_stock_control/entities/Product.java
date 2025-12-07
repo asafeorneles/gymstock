@@ -1,9 +1,7 @@
 package com.asafeorneles.gym_stock_control.entities;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -23,13 +21,8 @@ public class Product {
     @Column(name = "product_id")
     private UUID productId;
 
-    @Column(name = "name")
     private String name;
-
-    @Column(name = "brand")
     private String brand;
-
-    @Column(name = "price")
     private BigDecimal price;
 
     @Column(name = "cost_price")
@@ -40,26 +33,32 @@ public class Product {
     private Category category;
 
     @OneToOne(mappedBy = "product", cascade = CascadeType.ALL)
-    @PrimaryKeyJoinColumn // The primary key for Products will be the primary key for Product Inventory
     private ProductInventory inventory;
 
     @Column(name = "created_date")
-    private LocalDateTime created_date;
+    private LocalDateTime createdDate;
 
     @Column(name = "updated_date")
-    private LocalDateTime updated_date;
+    private LocalDateTime updatedDate;
 
     @PrePersist
     public void prePersist() {
-        this.created_date = LocalDateTime.now();
+        this.createdDate = LocalDateTime.now();
     }
 
     @PreUpdate
     public void preUpdate() {
-        this.updated_date = LocalDateTime.now();
+        this.updatedDate = LocalDateTime.now();
     }
 
-    public Product(String name, String brand, BigDecimal price, BigDecimal costPrice, Category category, ProductInventory inventory) {
+    @Builder
+    private Product(String name,
+                    String brand,
+                    BigDecimal price,
+                    BigDecimal costPrice,
+                    Category category,
+                    ProductInventory inventory) {
+
         this.name = name;
         this.brand = brand;
         this.price = price;
