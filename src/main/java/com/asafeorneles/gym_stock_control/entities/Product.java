@@ -21,8 +21,13 @@ public class Product {
     @Column(name = "product_id")
     private UUID productId;
 
+    @Column(name = "name")
     private String name;
+
+    @Column(name = "brand")
     private String brand;
+
+    @Column(name = "price")
     private BigDecimal price;
 
     @Column(name = "cost_price")
