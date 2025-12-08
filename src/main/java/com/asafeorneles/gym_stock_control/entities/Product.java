@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "tb_products", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"name", "brand", "category_id"})
+        @UniqueConstraint(columnNames = {"name", "brand"})
 })
 @Getter
 @Setter

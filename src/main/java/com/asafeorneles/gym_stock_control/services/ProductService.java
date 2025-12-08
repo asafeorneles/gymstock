@@ -26,7 +26,11 @@ public class ProductService {
 
     public ResponseProductDto createProduct(CreateProductDto createProductDto) {
         Category category = categoryRepository.findById(createProductDto.category_id())
-                .orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND)); // Create an Exception Handler for when Category does not exist
+
+        if (productRepository.existsByNameAndBrand(createProductDto.name(), createProductDto.brand())){
+            throw new IllegalArgumentException("product already exists");
+        }
 
         // CreateProductDto -> Product
         var product = ProductMapper.createProductToProduct(createProductDto, category);
@@ -35,6 +39,7 @@ public class ProductService {
                 .newProductInventory(product, createProductDto.quantity(), createProductDto.lowStockThreshold());
 
         product.setInventory(productInventory);
+
         productRepository.save(product);
 
         // Product -> ResponseProductDto
