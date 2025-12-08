@@ -28,13 +28,8 @@ public class ProductService {
         Category category = categoryRepository.findById(createProductDto.category_id())
                 .orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND));
 
-        var product = Product.builder()
-                .name(createProductDto.name())
-                .brand(createProductDto.brand())
-                .price(createProductDto.price())
-                .costPrice(createProductDto.costPrice())
-                .category(category)
-                .build();
+        // CreateProductDto -> Product
+        var product = ProductMapper.createProductToProduct(createProductDto, category);
 
         var productInventory = ProductInventoryFactory
                 .newProductInventory(product, createProductDto.quantity(), createProductDto.lowStockThreshold());
@@ -42,14 +37,8 @@ public class ProductService {
         product.setInventory(productInventory);
         productRepository.save(product);
 
-        return new ResponseProductDto(
-                product.getName(),
-                product.getBrand(),
-                product.getPrice(),
-                product.getCostPrice(),
-                new ResponseCategoryDto(category.getCategoryId(), category.getName(), category.getDescription()),
-                productInventory.getQuantity(),
-                productInventory.getLowStockThreshold());
+        // Product -> ResponseProductDto
+        return ProductMapper.productToResponseProduct(product);
     }
 
     public List<ResponseProductDto> findProducts() {
