@@ -2,7 +2,6 @@ package com.asafeorneles.gym_stock_control.controllers;
 
 import com.asafeorneles.gym_stock_control.dtos.category.CreateCategoryDto;
 import com.asafeorneles.gym_stock_control.dtos.category.ResponseCategoryDto;
-import com.asafeorneles.gym_stock_control.entities.Category;
 import com.asafeorneles.gym_stock_control.services.CategoryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -5,6 +5,7 @@ import com.asafeorneles.gym_stock_control.dtos.product.CreateProductDto;
 import com.asafeorneles.gym_stock_control.dtos.product.ResponseProductDto;
 import com.asafeorneles.gym_stock_control.entities.Category;
 import com.asafeorneles.gym_stock_control.entities.Product;
+import com.asafeorneles.gym_stock_control.mapper.ProductMapper;
 import com.asafeorneles.gym_stock_control.repositories.CategoryRepository;
 import com.asafeorneles.gym_stock_control.repositories.ProductRepository;
 import com.asafeorneles.gym_stock_control.services.factory.ProductInventoryFactory;
@@ -12,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.ErrorResponseException;
+
+import java.util.List;
 
 
 @Service
@@ -47,5 +50,10 @@ public class ProductService {
                 new ResponseCategoryDto(category.getCategoryId(), category.getName(), category.getDescription()),
                 productInventory.getQuantity(),
                 productInventory.getLowStockThreshold());
+    }
+
+    public List<ResponseProductDto> findProducts() {
+        List<Product> productsFound = productRepository.findAll();
+        return productsFound.stream().map(ProductMapper::productToResponseProduct).toList();
     }
 }
