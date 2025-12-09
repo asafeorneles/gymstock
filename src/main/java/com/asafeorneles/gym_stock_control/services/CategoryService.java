@@ -50,4 +50,11 @@ public class CategoryService {
 
         return CategoryMapper.categoryToResponseCategory(categoryFound);
     }
+
+    public void deleteCategory(UUID id) {
+        Category categoryFound = categoryRepository
+                .findById(id).orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND));// Create an Exception Handler for when Category does not exist
+
+        categoryRepository.delete(categoryFound);
+    }
 }
