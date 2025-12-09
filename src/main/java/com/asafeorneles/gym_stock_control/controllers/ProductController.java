@@ -4,9 +4,14 @@ import com.asafeorneles.gym_stock_control.dtos.product.CreateProductDto;
 import com.asafeorneles.gym_stock_control.dtos.product.ResponseProductDto;
 import com.asafeorneles.gym_stock_control.dtos.product.UpdateProductDto;
 import com.asafeorneles.gym_stock_control.services.ProductService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,36 +19,80 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
+@RequestMapping(value = "/products", produces = {"application/json"})
+@Tag(name = "products")
 public class ProductController {
     @Autowired
     ProductService productService;
 
-    @PostMapping("/products")
+    @Operation(summary = "Create a product")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Product created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request data"),
+            @ApiResponse(responseCode = "404", description = "Product not found"),
+            @ApiResponse(responseCode = "409", description = "Product with same name and brand already exists"),
+            @ApiResponse(responseCode = "500", description = "Unexpected server error")
+    })
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseProductDto> createProduct(@RequestBody @Valid CreateProductDto createProductDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(productService.createProduct(createProductDto));
     }
 
-    @GetMapping("/products")
+    @Operation(summary = "Get all products")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Product returned successfully"),
+            @ApiResponse(responseCode = "404", description = "Products not found"),
+            @ApiResponse(responseCode = "500", description = "Unexpected server error")
+    })
+    @GetMapping()
     public ResponseEntity<List<ResponseProductDto>> findProducts() {
         return ResponseEntity.status(HttpStatus.OK).body(productService.findProducts());
     }
 
-    @GetMapping("/products/{id}")
+    @Operation(summary = "Get a product by id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Product returned successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid ID format"),
+            @ApiResponse(responseCode = "404", description = "Product not found"),
+            @ApiResponse(responseCode = "500", description = "Unexpected server error")
+    })
+    @GetMapping(value = "/{id}")
     public ResponseEntity<ResponseProductDto> findProductById(@PathVariable(name = "id") UUID id){
         return ResponseEntity.status(HttpStatus.OK).body(productService.findProductById(id));
     }
 
-    @GetMapping("/products/low-stock")
+    @Operation(summary = "Get all products with low stock")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Product returned successfully"),
+            @ApiResponse(responseCode = "404", description = "Products not found"),
+            @ApiResponse(responseCode = "500", description = "Unexpected server error")
+    })
+    @GetMapping("/low-stock")
     public ResponseEntity<List<ResponseProductDto>> findProductsWithLowStock (){
         return ResponseEntity.status(HttpStatus.OK).body(productService.findProductsWithLowStock());
     }
 
-    @PutMapping("/products/{id}")
+    @Operation(summary = "Update a product")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Product updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid ID format"),
+            @ApiResponse(responseCode = "404", description = "Product not found"),
+            @ApiResponse(responseCode = "409", description = "Conflict updating product"),
+            @ApiResponse(responseCode = "500", description = "Unexpected server error")
+    })
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseProductDto> updateProduct(@PathVariable(name = "id") UUID id, @RequestBody @Valid UpdateProductDto updateProductDto){
         return ResponseEntity.status(HttpStatus.OK).body(productService.updateProduct(id, updateProductDto));
     }
 
-    @DeleteMapping("/products/{id}")
+    @Operation(summary = "Delete a product")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Product deleted successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid ID format"),
+            @ApiResponse(responseCode = "404", description = "Product not found"),
+            @ApiResponse(responseCode = "500", description = "Unexpected server error")
+    })
+    @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteProduct(@PathVariable(name = "id") UUID id){
         productService.deleteProduct(id);
         return ResponseEntity.status(HttpStatus.OK).body("Pet deleted with Success");
