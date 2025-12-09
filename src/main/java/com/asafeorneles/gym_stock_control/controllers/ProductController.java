@@ -20,7 +20,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping(value = "/products", produces = {"application/json"})
-@Tag(name = "products")
+@Tag(name = "Products")
 public class ProductController {
     @Autowired
     ProductService productService;
@@ -29,7 +29,6 @@ public class ProductController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Product created successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid request data"),
-            @ApiResponse(responseCode = "404", description = "Product not found"),
             @ApiResponse(responseCode = "409", description = "Product with same name and brand already exists"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
