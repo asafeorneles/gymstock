@@ -86,4 +86,8 @@ public class ProductService {
         return ProductMapper.productToResponseProduct(productFound);
     }
 
+    public void deleteProduct(UUID id) {
+        Product productFound = productRepository.findById(id).orElseThrow(()-> new ErrorResponseException(HttpStatus.NOT_FOUND)); // Create an Exception Handler for when Pet is not found
+        productRepository.delete(productFound);
+    }
 }

@@ -42,4 +42,10 @@ public class ProductController {
     public ResponseEntity<ResponseProductDto> updateProduct(@PathVariable(name = "id") UUID id, @RequestBody @Valid UpdateProductDto updateProductDto){
         return ResponseEntity.status(HttpStatus.OK).body(productService.updateProduct(id, updateProductDto));
     }
+
+    @DeleteMapping("/products/{id}")
+    public ResponseEntity<String> deleteProduct(@PathVariable(name = "id") UUID id){
+        productService.deleteProduct(id);
+        return ResponseEntity.status(HttpStatus.OK).body("Pet deleted with Success");
+    }
 }
