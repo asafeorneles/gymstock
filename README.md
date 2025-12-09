@@ -9,6 +9,7 @@ Projeto de controle de estoque para academia e lojas de musculação.
 - Docker
 - JUnit
 - Mockito
+- Swagger
 
 ## Status
 🚧 Em desenvolvimento
