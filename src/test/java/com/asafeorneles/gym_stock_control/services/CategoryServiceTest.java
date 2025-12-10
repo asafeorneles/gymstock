@@ -13,6 +13,7 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -68,7 +69,7 @@ class CategoryServiceTest {
             // ACT
             ResponseCategoryDto responseCategory = categoryService.createCategory(createCategoryDto);
 
-            // ASSERTS
+            // ASSERT
             verify(categoryRepository).save(categoryArgumentCaptor.capture());
             Category categoryCaptured = categoryArgumentCaptor.getValue();
 
@@ -94,8 +95,34 @@ class CategoryServiceTest {
         }
     }
 
-    @Test
-    void findCategory() {
+    @Nested
+    class findCategory {
+        @Test
+        void shouldFindCategoriesSuccessfully(){
+            // ARRANGE
+            when(categoryRepository.findAll()).thenReturn(List.of(category));
+
+            // ACT
+            List<ResponseCategoryDto> responseCategoriesFound = categoryService.findCategory();
+
+            // ASSERT
+            assertFalse(responseCategoriesFound.isEmpty());
+            assertEquals(1, responseCategoriesFound.size());
+            assertEquals(category.getName(), responseCategoriesFound.get(0).name());
+            assertEquals(category.getDescription(), responseCategoriesFound.get(0).description());
+            verify(categoryRepository, times(1)).findAll();
+        }
+
+        @Test
+        void shouldThrowExceptionWhenCategoriesIsNotFound(){
+            // ARRANGE
+            when(categoryRepository.findAll()).thenReturn(List.of());
+
+            // ASSERT
+            assertThrows(ErrorResponseException.class, ()-> categoryService.findCategory());
+            verify(categoryRepository, times(1)).findAll();
+
+        }
     }
 
     @Test
