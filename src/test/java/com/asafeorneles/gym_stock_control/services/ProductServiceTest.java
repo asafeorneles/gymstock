@@ -348,8 +348,27 @@ class ProductServiceTest {
             verify(categoryRepository, times(1)).findById(product.getCategory().getCategoryId());
         }
 
-        @Test
-        void deleteProduct() {
+        @Nested
+        class deleteProduct {
+            @Test
+            void shouldDeleteAProductsSuccessfully(){
+                // ARRANGE
+                when(productRepository.findById(product.getProductId())).thenReturn(Optional.of(product));
+                doNothing().when(productRepository).delete(product);
+
+                // ACT
+                productService.deleteProduct(product.getProductId());
+
+                // ASSERT
+                verify(productRepository, times(1)).findById(productIdArgumentCaptor.capture());
+                verify(productRepository, times(1)).delete(productArgumentCaptor.capture());
+
+                UUID idCaptured = productIdArgumentCaptor.getValue();
+                Product productCaptured = productArgumentCaptor.getValue();
+
+                assertEquals(product.getProductId(), idCaptured);
+                assertEquals(product, productCaptured);
+            }
         }
     }
 }
