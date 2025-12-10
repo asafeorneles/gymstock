@@ -21,4 +21,9 @@ public class InventoryController {
     public ResponseEntity<List<ResponseProductInventory>> findProductsInventories(){
         return ResponseEntity.status(HttpStatus.OK).body(productInventoryService.findProducts());
     }
+
+    @PatchMapping("/quantity/{id}")
+    public ResponseEntity<ResponseProductInventory> updateQuantity(@PathVariable(name = "id") UUID id, PatchProductInventoryQuantity patchProductInventoryQuantity){
+        return ResponseEntity.status(HttpStatus.OK).body(productInventoryService.updateQuantity(id, patchProductInventoryQuantity));
+    }
 }
