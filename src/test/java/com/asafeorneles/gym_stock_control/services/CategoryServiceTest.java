@@ -2,6 +2,7 @@ package com.asafeorneles.gym_stock_control.services;
 
 import com.asafeorneles.gym_stock_control.dtos.category.CreateCategoryDto;
 import com.asafeorneles.gym_stock_control.dtos.category.ResponseCategoryDto;
+import com.asafeorneles.gym_stock_control.dtos.category.UpdateCategoryDto;
 import com.asafeorneles.gym_stock_control.entities.Category;
 import com.asafeorneles.gym_stock_control.repositories.CategoryRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,13 +13,12 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.ErrorResponseException;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
-
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.ErrorResponseException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -34,10 +34,13 @@ class CategoryServiceTest {
 
     private Category category;
     private CreateCategoryDto createCategoryDto;
-    private ResponseCategoryDto responseCategoryDto;
+    private UpdateCategoryDto updateCategoryDto;
 
     @Captor
     ArgumentCaptor<Category> categoryArgumentCaptor;
+
+    @Captor
+    ArgumentCaptor<UUID> categoryIdArgumentCaptor;
 
     @BeforeEach
     void setUp() {
@@ -52,11 +55,11 @@ class CategoryServiceTest {
                 "Alimento em pó para maior eficiência"
         );
 
-        responseCategoryDto = new ResponseCategoryDto(
-                UUID.randomUUID(),
+        updateCategoryDto = new UpdateCategoryDto(
                 "Suplementos",
                 "Alimento em pó para maior eficiência"
         );
+
     }
 
     @Nested
@@ -125,15 +128,112 @@ class CategoryServiceTest {
         }
     }
 
-    @Test
-    void findCategoryById() {
+    @Nested
+    class findCategoryById{
+        @Test
+        void shouldFindCategoryByIdSuccessfully(){
+            // ARRANGE
+            when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.of(category));
+
+            // ACT
+            ResponseCategoryDto responseCategory = categoryService.findCategoryById(category.getCategoryId());
+
+            // ASSERT
+            verify(categoryRepository).findById(categoryIdArgumentCaptor.capture());
+            UUID idCaptured = categoryIdArgumentCaptor.getValue();
+            assertNotNull(responseCategory);
+            assertEquals(category.getCategoryId(), idCaptured);
+            assertEquals(category.getName(), responseCategory.name());
+            assertEquals(category.getDescription(), responseCategory.description());
+        }
+
+        @Test
+        void shouldThrowExceptionWhenCategoryIsNotFoundById(){
+            // ARRANGE
+            when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.empty());
+
+            // ASSERT
+            assertThrows(ErrorResponseException.class, ()-> categoryService.findCategoryById(category.getCategoryId()));
+            verify(categoryRepository, times(1)).findById(category.getCategoryId());
+
+        }
     }
 
-    @Test
-    void updateCategory() {
+    @Nested
+    class updateCategory{
+        @Test
+        void shouldUpdateACategorySuccessfully(){
+            when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.of(category));
+            when(categoryRepository.save(any(Category.class))).thenReturn(category);
+
+            ResponseCategoryDto responseCategoryDto = categoryService.updateCategory(category.getCategoryId(), updateCategoryDto);
+
+            // ASSERT
+            assertNotNull(responseCategoryDto);
+            assertEquals(category.getCategoryId(), responseCategoryDto.categoryId());
+
+            verify(categoryRepository).save(categoryArgumentCaptor.capture());
+            Category categoryCaptured = categoryArgumentCaptor.getValue();
+
+            // UpdateCategoryDto -> Category
+            assertEquals(updateCategoryDto.name(), categoryCaptured.getName());
+            assertEquals(updateCategoryDto.description(), categoryCaptured.getDescription());
+
+            // UpdateCategoryDto -> ResponseCategoryDto
+            assertEquals(updateCategoryDto.name(), responseCategoryDto.name());
+            assertEquals(updateCategoryDto.description(), responseCategoryDto.description());
+        }
+
+        @Test
+        void shouldThrowExceptionWhenCategoryIsNotFound(){
+            // ARRANGE
+            when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.empty());
+
+            // ASSERT
+            assertThrows(ErrorResponseException.class, ()-> categoryService.updateCategory(category.getCategoryId(), updateCategoryDto));
+            verify(categoryRepository, times(1)).findById(category.getCategoryId());
+        }
+
+        @Test
+        void shouldThrowExceptionWhenCategoryIsNotUpdate(){
+            // ARRANGE
+            when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.of(category));
+            when(categoryRepository.save(any(Category.class))).thenThrow(RuntimeException.class);
+
+            // ASSERT
+            assertThrows(RuntimeException.class, ()-> categoryService.updateCategory(category.getCategoryId(), updateCategoryDto));
+            verify(categoryRepository, times(1)).findById(category.getCategoryId());
+            verify(categoryRepository, times(1)).save(any(Category.class));
+        }
     }
 
-    @Test
-    void deleteCategory() {
+    @Nested
+    class deleteCategory {
+        @Test
+        void shouldDeleteACategorySuccessfully(){
+            // ARRANGE
+            when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.of(category));
+            doNothing().when(categoryRepository).delete(category);
+
+            // ACT
+            categoryService.deleteCategory(category.getCategoryId());
+
+            // ASSERT
+            verify(categoryRepository).delete(categoryArgumentCaptor.capture());
+            Category categoryCaptured = categoryArgumentCaptor.getValue();
+
+            assertEquals(category.getCategoryId(), categoryCaptured.getCategoryId());
+            assertEquals(category, categoryCaptured);
+        }
+
+        @Test
+        void shouldThrowExceptionWhenCategoryIsNotFound(){
+            // ARRANGE
+            when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.empty());
+
+            // ASSERT
+            assertThrows(ErrorResponseException.class, ()-> categoryService.deleteCategory(category.getCategoryId()));
+            verify(categoryRepository, times(1)).findById(category.getCategoryId());
+        }
     }
 }
