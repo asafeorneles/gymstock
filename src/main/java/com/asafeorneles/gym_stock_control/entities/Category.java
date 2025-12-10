@@ -11,6 +11,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -22,10 +23,4 @@ public class Category {
 
     @Column(name = "description")
     private String description;
-
-    @Builder
-    public Category (String name, String description){
-        this.name = name;
-        this.description = description;
-    }
 }

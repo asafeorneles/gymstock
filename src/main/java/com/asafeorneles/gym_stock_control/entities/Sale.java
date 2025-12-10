@@ -39,7 +39,13 @@ public class Sale {
         this.created_date = LocalDateTime.now();
     }
 
-    public Sale(List<SaleItem> saleItems, BigDecimal totalPrice, PaymentMethod paymentMethod) {
+    public Sale(
+            UUID saleId,
+            List<SaleItem> saleItems,
+            BigDecimal totalPrice,
+            PaymentMethod paymentMethod) {
+
+        this.saleId = saleId;
         this.saleItems = saleItems;
         this.totalPrice = totalPrice;
         this.paymentMethod = paymentMethod;

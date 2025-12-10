@@ -39,7 +39,11 @@ public class ProductInventory {
     }
 
     @Builder
-    public ProductInventory(Product product, int quantity, int lowStockThreshold) {
+    public ProductInventory(
+            Product product,
+            int quantity,
+            int lowStockThreshold) {
+
         this.product = product;
         this.quantity = quantity;
         this.lowStockThreshold = lowStockThreshold;

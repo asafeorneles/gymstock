@@ -52,7 +52,16 @@ public class SaleProductHistory {
         this.saleDate = LocalDateTime.now();
     }
 
-    public SaleProductHistory(PaymentMethod paymentMethod, Sale sale, BigDecimal costPrice, BigDecimal totalPrice, int quantity, Product product) {
+    public SaleProductHistory(
+            UUID saleProductHistoryId,
+            PaymentMethod paymentMethod,
+            Sale sale,
+            BigDecimal costPrice,
+            BigDecimal totalPrice,
+            int quantity,
+            Product product) {
+
+        this.saleProductHistoryId = saleProductHistoryId;
         this.paymentMethod = paymentMethod;
         this.sale = sale;
         this.costPrice = costPrice;

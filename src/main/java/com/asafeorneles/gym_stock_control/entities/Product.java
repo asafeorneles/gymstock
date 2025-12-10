@@ -57,13 +57,15 @@ public class Product {
     }
 
     @Builder
-    private Product(String name,
+    private Product(UUID productId,
+                    String name,
                     String brand,
                     BigDecimal price,
                     BigDecimal costPrice,
                     Category category,
                     ProductInventory inventory) {
 
+        this.productId = productId;
         this.name = name;
         this.brand = brand;
         this.price = price;
