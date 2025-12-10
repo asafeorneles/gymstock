@@ -5,6 +5,6 @@ import java.util.UUID;
 public record ResponseProductInventory(
         UUID productId,
         int quantity,
-        int lowerStockThreshold
+        int lowStockThreshold
 ) {
 }
