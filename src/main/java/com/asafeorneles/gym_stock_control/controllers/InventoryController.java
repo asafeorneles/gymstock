@@ -1,5 +1,6 @@
 package com.asafeorneles.gym_stock_control.controllers;
 
+import com.asafeorneles.gym_stock_control.dtos.ProductInventory.PatchProductInventoryLowStockThreshold;
 import com.asafeorneles.gym_stock_control.dtos.ProductInventory.PatchProductInventoryQuantity;
 import com.asafeorneles.gym_stock_control.dtos.ProductInventory.ResponseProductInventory;
 import com.asafeorneles.gym_stock_control.services.ProductInventoryService;
@@ -25,5 +26,10 @@ public class InventoryController {
     @PatchMapping("/quantity/{id}")
     public ResponseEntity<ResponseProductInventory> updateQuantity(@PathVariable(name = "id") UUID id, PatchProductInventoryQuantity patchProductInventoryQuantity){
         return ResponseEntity.status(HttpStatus.OK).body(productInventoryService.updateQuantity(id, patchProductInventoryQuantity));
+    }
+
+    @PatchMapping("/low-stock/{id}")
+    public ResponseEntity<ResponseProductInventory> updateQuantity(@PathVariable(name = "id") UUID id, PatchProductInventoryLowStockThreshold patchProductInventoryLowStockThreshold){
+        return ResponseEntity.status(HttpStatus.OK).body(productInventoryService.updateLowStockThreshold(id, patchProductInventoryLowStockThreshold));
     }
 }

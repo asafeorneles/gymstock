@@ -1,5 +1,6 @@
 package com.asafeorneles.gym_stock_control.services;
 
+import com.asafeorneles.gym_stock_control.dtos.ProductInventory.PatchProductInventoryLowStockThreshold;
 import com.asafeorneles.gym_stock_control.dtos.ProductInventory.PatchProductInventoryQuantity;
 import com.asafeorneles.gym_stock_control.dtos.ProductInventory.ResponseProductInventory;
 import com.asafeorneles.gym_stock_control.entities.ProductInventory;
@@ -34,6 +35,16 @@ public class ProductInventoryService {
                 .orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND));// Create an Exception Handler for when ProductInventory is not found
 
         ProductInventoryMapper.patchProductInventoryQuantity(productInventoryFound, patchProductInventoryQuantity);
+        productInventoryRepository.save(productInventoryFound);
+
+        return ProductInventoryMapper.productInventoryToResponseProductInventory(productInventoryFound);
+    }
+
+    public ResponseProductInventory updateLowStockThreshold(UUID id, PatchProductInventoryLowStockThreshold patchProductInventoryLowStockThreshold) {
+        ProductInventory productInventoryFound = productInventoryRepository.findById(id)
+                .orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND));// Create an Exception Handler for when ProductInventory is not found
+
+        ProductInventoryMapper.patchProductInventoryLowStockThreshold(productInventoryFound, patchProductInventoryLowStockThreshold);
         productInventoryRepository.save(productInventoryFound);
 
         return ProductInventoryMapper.productInventoryToResponseProductInventory(productInventoryFound);
