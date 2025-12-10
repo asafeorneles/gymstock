@@ -20,7 +20,7 @@ public class InventoryController {
 
     @GetMapping()
     public ResponseEntity<List<ResponseProductInventory>> findProductsInventories(){
-        return ResponseEntity.status(HttpStatus.OK).body(productInventoryService.findProducts());
+        return ResponseEntity.status(HttpStatus.OK).body(productInventoryService.findProductsInventories());
     }
 
     @PatchMapping("/quantity/{id}")

@@ -20,7 +20,7 @@ public class ProductInventoryService {
     @Autowired
     ProductInventoryRepository productInventoryRepository;
 
-    public List<ResponseProductInventory> findProducts() {
+    public List<ResponseProductInventory> findProductsInventories() {
         List<ProductInventory> productsInventoriesFound = productInventoryRepository.findAll();
         if (productsInventoriesFound.isEmpty()){
             throw new ErrorResponseException(HttpStatus.NOT_FOUND); // Create an Exception Handler for when ProductInventory is not found
