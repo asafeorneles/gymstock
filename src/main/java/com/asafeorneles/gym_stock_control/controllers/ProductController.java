@@ -43,6 +43,7 @@ public class ProductController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Product returned successfully"),
             @ApiResponse(responseCode = "404", description = "Products not found"),
+            @ApiResponse(responseCode = "400", description = "Invalid filter parameters"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @GetMapping()
