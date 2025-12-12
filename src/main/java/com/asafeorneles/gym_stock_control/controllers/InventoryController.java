@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,7 +43,7 @@ public class InventoryController {
             @ApiResponse(responseCode = "409", description = "Conflict updating inventory"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
-    @PatchMapping("/quantity/{id}")
+    @PatchMapping(value = "/quantity/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseProductInventory> updateQuantity(@PathVariable(name = "id") UUID id, PatchProductInventoryQuantity patchProductInventoryQuantity){
         return ResponseEntity.status(HttpStatus.OK).body(productInventoryService.updateQuantity(id, patchProductInventoryQuantity));
     }
@@ -55,7 +56,7 @@ public class InventoryController {
             @ApiResponse(responseCode = "409", description = "Conflict updating inventory"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
-    @PatchMapping("/low-stock/{id}")
+    @PatchMapping(value = "/low-stock/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseProductInventory> updateQuantity(@PathVariable(name = "id") UUID id, PatchProductInventoryLowStockThreshold patchProductInventoryLowStockThreshold){
         return ResponseEntity.status(HttpStatus.OK).body(productInventoryService.updateLowStockThreshold(id, patchProductInventoryLowStockThreshold));
     }

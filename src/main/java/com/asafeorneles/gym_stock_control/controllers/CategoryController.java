@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,7 +32,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "409", description = "Conflict creating category"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
-    @PostMapping()
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseCategoryDto> createCategory(@RequestBody @Valid CreateCategoryDto createCategoryDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.createCategory(createCategoryDto));
     }
@@ -67,7 +68,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "409", description = "Conflict updating Category"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseCategoryDto> updateCategory(@PathVariable(name = "id") UUID id, @RequestBody @Valid UpdateCategoryDto updateCategoryDto) {
         return ResponseEntity.status(HttpStatus.OK).body(categoryService.updateCategory(id, updateCategoryDto));
     }
