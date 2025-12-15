@@ -52,4 +52,10 @@ public class Sale {
         this.totalPrice = totalPrice;
         this.paymentMethod = paymentMethod;
     }
+
+    public void calculateTotalPrice() {
+        this.totalPrice = saleItems.stream()
+                .map(SaleItem::getTotalPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
 }
