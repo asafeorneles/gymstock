@@ -1,0 +1,16 @@
+package com.asafeorneles.gym_stock_control.dtos.sale;
+
+import com.asafeorneles.gym_stock_control.dtos.SaleItem.ResponseSaleItemDto;
+import com.asafeorneles.gym_stock_control.enums.PaymentMethod;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.UUID;
+
+public record ResponseSaleDto(
+        UUID saleId,
+        List<ResponseSaleItemDto> saleItems,
+        BigDecimal totalPrice,
+        PaymentMethod paymentMethod
+) {
+}

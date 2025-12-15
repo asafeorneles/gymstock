@@ -1,0 +1,24 @@
+package com.asafeorneles.gym_stock_control.mapper;
+
+import com.asafeorneles.gym_stock_control.dtos.SaleItem.ResponseSaleItemDto;
+import com.asafeorneles.gym_stock_control.entities.SaleItem;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class SaleItemMapper {
+    public static List<ResponseSaleItemDto> saleItemsToResponseSaleItems(List<SaleItem> saleItems) {
+        List<ResponseSaleItemDto> responseSaleItemsDto = new ArrayList<>();
+        for (SaleItem saleItem : saleItems) {
+            var responseSaleItemDto = new ResponseSaleItemDto(
+                    saleItem.getSaleItemId(),
+                    saleItem.getProduct().getProductId(),
+                    saleItem.getProduct().getName(),
+                    saleItem.getTotalPrice(),
+                    saleItem.getUnityPrice()
+            );
+            responseSaleItemsDto.add(responseSaleItemDto);
+        }
+        return responseSaleItemsDto;
+    }
+}
