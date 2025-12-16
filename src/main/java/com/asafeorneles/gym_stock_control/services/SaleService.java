@@ -86,4 +86,11 @@ public class SaleService {
 
         return SaleMapper.saleToResponseSale(saleFound);
     }
+
+    public void deleteSale(UUID id) {
+        Sale saleFound = saleRepository.findById(id)
+                .orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND));
+
+        saleRepository.delete(saleFound);
+    }
 }

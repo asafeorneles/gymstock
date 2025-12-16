@@ -33,4 +33,11 @@ public class SaleController {
     public ResponseEntity<ResponseSaleDto> findSales(@PathVariable(name = "id") UUID id){
         return ResponseEntity.status(HttpStatus.OK).body(saleService.findSaleById(id));
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteSale(@PathVariable(name = "id") UUID id){
+        saleService.deleteSale(id);
+        return ResponseEntity.status(HttpStatus.OK).body("Sale deleted successfully");
+    }
+
 }
