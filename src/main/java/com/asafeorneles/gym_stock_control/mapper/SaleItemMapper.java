@@ -14,8 +14,9 @@ public class SaleItemMapper {
                     saleItem.getSaleItemId(),
                     saleItem.getProduct().getProductId(),
                     saleItem.getProduct().getName(),
-                    saleItem.getTotalPrice(),
-                    saleItem.getUnityPrice()
+                    saleItem.getQuantity(),
+                    saleItem.getUnityPrice(),
+                    saleItem.getTotalPrice()
             );
             responseSaleItemsDto.add(responseSaleItemDto);
         }

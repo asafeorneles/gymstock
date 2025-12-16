@@ -9,6 +9,7 @@ public record ResponseSaleItemDto(
         UUID saleItemId,
         UUID productId, // Or only product name
         String nameProduct,
+        int quantity,
         BigDecimal unityPrice,
         BigDecimal totalPrice
 ) {
