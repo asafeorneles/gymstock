@@ -1,6 +1,7 @@
 package com.asafeorneles.gym_stock_control.queryFilters;
 
 import com.asafeorneles.gym_stock_control.entities.Sale;
+import com.asafeorneles.gym_stock_control.enums.PaymentMethod;
 import lombok.Data;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -19,6 +20,7 @@ public class SaleQueryFilters {
     private LocalDate createdMax;
     @DateTimeFormat (iso = DateTimeFormat.ISO.DATE)
     private LocalDate createdMin;
+    private PaymentMethod paymentMethod;
 
 
     public Specification<Sale> toSpecification() {
@@ -31,6 +33,7 @@ public class SaleQueryFilters {
         return totalPriceGreaterThanOrEqualTo(totalPriceMin)
                 .and(totalPriceLessThanOrEqualTo(totalPriceMax))
                 .and(createdAtGreaterThanOrEqualTo(min))
-                .and(createdAtLessThanOrEqualTo(max));
+                .and(createdAtLessThanOrEqualTo(max))
+                .and(paymentMethodEqual(paymentMethod));
     }
 }

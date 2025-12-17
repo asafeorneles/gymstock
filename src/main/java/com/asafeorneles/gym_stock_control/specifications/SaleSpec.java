@@ -1,6 +1,7 @@
 package com.asafeorneles.gym_stock_control.specifications;
 
 import com.asafeorneles.gym_stock_control.entities.Sale;
+import com.asafeorneles.gym_stock_control.enums.PaymentMethod;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.ObjectUtils;
 
@@ -45,6 +46,15 @@ public class SaleSpec {
             }
 
             return builder.lessThanOrEqualTo(root.get("createdDate"), createdDate);
+        };
+    }
+
+    public static Specification<Sale> paymentMethodEqual(PaymentMethod paymentMethod){
+        return (root, query, builder) -> {
+            if (ObjectUtils.isEmpty(paymentMethod)){
+                return null;
+            }
+            return builder.equal(root.get("paymentMethod"), paymentMethod);
         };
     }
 }
