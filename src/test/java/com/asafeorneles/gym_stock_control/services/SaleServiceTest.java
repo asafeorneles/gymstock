@@ -1,7 +1,6 @@
 package com.asafeorneles.gym_stock_control.services;
 
 import com.asafeorneles.gym_stock_control.dtos.SaleItem.CreateSaleItemDto;
-import com.asafeorneles.gym_stock_control.dtos.SaleItem.ResponseSaleItemDto;
 import com.asafeorneles.gym_stock_control.dtos.sale.CreateSaleDto;
 import com.asafeorneles.gym_stock_control.dtos.sale.ResponseSaleDto;
 import com.asafeorneles.gym_stock_control.entities.Category;
@@ -20,7 +19,7 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.web.ErrorResponseException;
 
 import java.math.BigDecimal;
@@ -92,7 +91,7 @@ class SaleServiceTest {
     @Nested
     class createSale {
         @Test
-        void shouldCreateSaleWithSuccess(){
+        void shouldCreateSaleSuccessfully(){
             // ARRANGE
             when(productRepository.findById(any(UUID.class)))
                     .thenReturn(Optional.of(saleItem.getProduct()));
@@ -121,7 +120,7 @@ class SaleServiceTest {
             verify(productInventoryService, times(1)).updateQuantityAfterSale(anyList());
         }
         @Test
-        void shouldThrowExceptionWhenProductDoesNotExist() {
+        void shouldThrowExceptionWhenProductIsNotFound() {
             when(productRepository.findById(createSaleItemDto.productId()))
                     .thenReturn(Optional.empty());
 
@@ -134,7 +133,7 @@ class SaleServiceTest {
         }
 
         @Test
-        void shouldNotSaveSaleWhenInventoryUpdateFails() {
+        void shouldNotPersistSaleWhenInventoryUpdateFails() {
             // ARRANGE
             when(productRepository.findById(createSaleItemDto.productId()))
                     .thenReturn(Optional.of(saleItem.getProduct()));
@@ -150,12 +149,33 @@ class SaleServiceTest {
         }
     }
 
-    @Test
-    void newSaleItemList() {
-    }
+    @Nested
+    class findSales {
+        @Test
+        void shouldFindSalesSuccessfully() {
+            // ARRANGE
+            when(saleRepository.findAll(any(Specification.class))).thenReturn(List.of(sale));
 
-    @Test
-    void findSales() {
+            //ACT
+            List<ResponseSaleDto> salesFound = saleService.findSales(Specification.unrestricted());
+
+            // ASSERT
+            assertFalse(salesFound.isEmpty());
+            assertEquals(1, salesFound.size());
+            assertEquals(sale.getTotalPrice(), salesFound.get(0).totalPrice());
+            assertEquals(sale.getPaymentMethod(), salesFound.get(0).paymentMethod());
+            verify(saleRepository, times(1)).findAll(any(Specification.class));
+        }
+
+        @Test
+        void shouldThrowExceptionWhenSalesIsNotFound(){
+            // ARRANGE
+            when(saleRepository.findAll(any(Specification.class))).thenReturn(List.of());
+
+            // ASSERT
+            assertThrows(ErrorResponseException.class, ()-> saleService.findSales(Specification.unrestricted()));
+            verify(saleRepository, times(1)).findAll(any(Specification.class));
+        }
     }
 
     @Test
