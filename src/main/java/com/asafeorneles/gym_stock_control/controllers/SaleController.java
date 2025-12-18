@@ -8,6 +8,7 @@ import com.asafeorneles.gym_stock_control.services.SaleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping(value = "/sales", produces = {"application/json"})
+@Tag(name = "Sales")
 public class SaleController {
 
     @Autowired
