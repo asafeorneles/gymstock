@@ -35,6 +35,18 @@ public class InventoryController {
         return ResponseEntity.status(HttpStatus.OK).body(productInventoryService.findProductsInventories());
     }
 
+    @Operation(summary = "Get a products by ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Product inventories returned successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid ID format"),
+            @ApiResponse(responseCode = "404", description = "Product inventory not found"),
+            @ApiResponse(responseCode = "500", description = "Unexpected server error")
+    })
+    @GetMapping("/{id}")
+    public ResponseEntity<ResponseProductInventoryDetailDto> findProductsInventories(@PathVariable(name = "id") UUID id){
+        return ResponseEntity.status(HttpStatus.OK).body(productInventoryService.findProductInventoryById(id));
+    }
+
     @Operation(summary = "Update the quantity of a product inventory")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Product inventory quantity updated successfully"),

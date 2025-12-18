@@ -32,6 +32,13 @@ public class ProductInventoryService {
                 .toList();
     }
 
+    public ResponseProductInventoryDetailDto findProductInventoryById(UUID id) {
+        ProductInventory productInventoryFound = productInventoryRepository.findById(id)
+                .orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND));// Create an Exception Handler for when ProductInventory is not found
+
+        return ProductInventoryMapper.productInventoryToResponseProductInventoryDetail(productInventoryFound);
+    }
+
     public ResponseProductInventoryDetailDto updateQuantity(UUID id, PatchProductInventoryQuantityDto patchProductInventoryQuantity){
         ProductInventory productInventoryFound = productInventoryRepository.findById(id)
                 .orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND));// Create an Exception Handler for when ProductInventory is not found
