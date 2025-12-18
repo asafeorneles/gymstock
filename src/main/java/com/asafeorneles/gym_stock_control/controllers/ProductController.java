@@ -52,6 +52,18 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).body(productService.findProducts(filters.toSpecification()));
     }
 
+    @Operation(summary = "Get all products with details")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Product returned successfully"),
+            @ApiResponse(responseCode = "404", description = "Products not found"),
+            @ApiResponse(responseCode = "400", description = "Invalid filter parameters"),
+            @ApiResponse(responseCode = "500", description = "Unexpected server error")
+    })
+    @GetMapping("/details")
+    public ResponseEntity<List<ResponseProductDetailDto>> findProductsDetails(@ParameterObject ProductQueryFilters filters) {
+        return ResponseEntity.status(HttpStatus.OK).body(productService.findProductsDetails(filters.toSpecification()));
+    }
+
     @Operation(summary = "Get a product by id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Product returned successfully"),

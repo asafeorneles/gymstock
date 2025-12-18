@@ -57,6 +57,14 @@ public class ProductService {
         return productsFound.stream().map(ProductMapper::productToResponseProduct).toList();
     }
 
+    public List<ResponseProductDetailDto> findProductsDetails(Specification<Product> specification) {
+        List<Product> productsFound = productRepository.findAll(specification);
+        if (productsFound.isEmpty()) {
+            throw new ErrorResponseException(HttpStatus.NOT_FOUND); // Create an Exception Handler for when Pet is not found
+        }
+        return productsFound.stream().map(ProductMapper::productToResponseCreatedProduct).toList();
+    }
+
     public ResponseProductDto findProductById(UUID id) {
         Product productFound = productRepository.findById(id).orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND)); // Create an Exception Handler for when Pet is not found
         return ProductMapper.productToResponseProduct(productFound);
