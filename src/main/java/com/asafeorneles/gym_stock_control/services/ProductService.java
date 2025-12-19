@@ -6,6 +6,7 @@ import com.asafeorneles.gym_stock_control.dtos.product.ResponseProductDto;
 import com.asafeorneles.gym_stock_control.dtos.product.UpdateProductDto;
 import com.asafeorneles.gym_stock_control.entities.Category;
 import com.asafeorneles.gym_stock_control.entities.Product;
+import com.asafeorneles.gym_stock_control.exceptions.CategoryNotFoundException;
 import com.asafeorneles.gym_stock_control.exceptions.ProductNotFoundException;
 import com.asafeorneles.gym_stock_control.mapper.ProductMapper;
 import com.asafeorneles.gym_stock_control.repositories.CategoryRepository;
@@ -13,9 +14,7 @@ import com.asafeorneles.gym_stock_control.repositories.ProductRepository;
 import com.asafeorneles.gym_stock_control.services.factory.ProductInventoryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.ErrorResponseException;
 
 import java.util.List;
 import java.util.UUID;
@@ -29,8 +28,9 @@ public class ProductService {
     CategoryRepository categoryRepository;
 
     public ResponseProductDetailDto createProduct(CreateProductDto createProductDto) {
-        Category category = categoryRepository.findById(createProductDto.categoryId())
-                .orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND)); // Create an Exception Handler for when Category does not exist
+        UUID categoryId = createProductDto.categoryId();
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new CategoryNotFoundException("The category {" + categoryId + "} does not exist. Please insert a valid category."));
 
         if (productRepository.existsByNameAndBrand(createProductDto.name(), createProductDto.brand())) {
             throw new IllegalArgumentException("product already exists");
@@ -68,7 +68,7 @@ public class ProductService {
 
     public ResponseProductDto findProductById(UUID id) {
         Product productFound = productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found by this id: " + id));
+                .orElseThrow(() -> new ProductNotFoundException("Product not found by id: " + id));
         return ProductMapper.productToResponseProduct(productFound);
     }
 
@@ -84,14 +84,13 @@ public class ProductService {
         return productsWithLowStock;
     }
 
-
-    // Testar se é possivel alterar a categoria
     public ResponseProductDetailDto updateProduct(UUID id, UpdateProductDto updateProductDto) {
         Product productFound = productRepository.findById(id)
-                .orElseThrow(()-> new ProductNotFoundException("Product not found by this id: " + id));
+                .orElseThrow(() -> new ProductNotFoundException("Product not found by id: " + id));
 
-        Category category = categoryRepository.findById(updateProductDto.categoryId())
-                .orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND)); // Create an Exception Handler for when Category does not exist
+        UUID updateCategoryId = updateProductDto.categoryId();
+        Category category = categoryRepository.findById(updateCategoryId)
+                .orElseThrow(() -> new CategoryNotFoundException("The category {" + updateCategoryId + "} does not exist. Please insert a valid category to update the product."));
 
         ProductMapper.updateProductToProduct(updateProductDto, productFound, category);
 
@@ -102,7 +101,7 @@ public class ProductService {
 
     public void deleteProduct(UUID id) {
         Product productFound = productRepository.findById(id)
-                .orElseThrow(()-> new ProductNotFoundException("Product not found by this id: " + id));
+                .orElseThrow(() -> new ProductNotFoundException("Product not found by id: " + id));
         productRepository.delete(productFound);
     }
 }
