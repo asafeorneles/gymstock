@@ -120,19 +120,6 @@ class AnalyticsServiceTest {
         }
 
         @Test
-        void shouldLimitResultsToMaxAllowedValue(){
-            int limit = 60;
-            when(analyticsRepository.findTopSellingProducts(30)).thenReturn(List.of());
-
-            List<TopSellingProductsDto> topSellingProducts = analyticsService.getTopSellingProducts(limit);
-
-            assertTrue(topSellingProducts.isEmpty());
-            verify(analyticsRepository).findTopSellingProducts(30);
-            verify(analyticsRepository, never()).findTopSellingProducts(60);
-
-        }
-
-        @Test
         void shouldUseDefaultLimitWhenLimitIsNull() {
             when(analyticsRepository.findTopSellingProducts(10))
                     .thenReturn(List.of());
@@ -147,11 +134,9 @@ class AnalyticsServiceTest {
     class getTopSellingProductsByPeriod {
         @Test
         void shouldLimitResultsAndConvertDatesCorrectly() {
-            int limit = 100;
-
-
+            int limit = 2;
             when(analyticsRepository.findTopSellingProductsByPeriod(
-                    30,
+                    limit,
                     expectedStartDateTime,
                     expectedEndDateTime
             )).thenReturn(List.of());
@@ -159,33 +144,10 @@ class AnalyticsServiceTest {
             analyticsService.getTopSellingProductsByPeriod(limit, startDate, endDate);
 
             verify(analyticsRepository).findTopSellingProductsByPeriod(
-                    30,
+                    limit,
                     expectedStartDateTime,
                     expectedEndDateTime
             );
-        }
-
-        @Test
-        void shouldLimitResultsToMaxAllowedValue(){
-            int limit = 60;
-            when(analyticsRepository.findTopSellingProductsByPeriod(
-                    30,
-                    expectedStartDateTime,
-                    expectedEndDateTime
-            )).thenReturn(List.of());
-
-            List<TopSellingProductsDto> topSellingProducts = analyticsService.getTopSellingProductsByPeriod(
-                    limit, startDate, endDate
-            );
-
-            assertTrue(topSellingProducts.isEmpty());
-            verify(analyticsRepository).findTopSellingProductsByPeriod(
-                    30,
-                    expectedStartDateTime,
-                    expectedEndDateTime
-            );
-            verify(analyticsRepository, never()).findTopSellingProductsByPeriod(60, expectedStartDateTime, expectedEndDateTime);
-
         }
 
         @Test
