@@ -6,12 +6,11 @@ import com.asafeorneles.gym_stock_control.dtos.ProductInventory.ResponseProductI
 import com.asafeorneles.gym_stock_control.entities.Product;
 import com.asafeorneles.gym_stock_control.entities.ProductInventory;
 import com.asafeorneles.gym_stock_control.entities.SaleItem;
+import com.asafeorneles.gym_stock_control.exceptions.ProductInventoryNotFoundException;
 import com.asafeorneles.gym_stock_control.mapper.ProductInventoryMapper;
 import com.asafeorneles.gym_stock_control.repositories.ProductInventoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.ErrorResponseException;
 
 import java.util.List;
 import java.util.UUID;
@@ -25,7 +24,7 @@ public class ProductInventoryService {
     public List<ResponseProductInventoryDetailDto> findProductsInventories() {
         List<ProductInventory> productsInventoriesFound = productInventoryRepository.findAll();
         if (productsInventoriesFound.isEmpty()){
-            throw new ErrorResponseException(HttpStatus.NOT_FOUND); // Create an Exception Handler for when ProductInventory is not found
+            throw new ProductInventoryNotFoundException("Products Inventories not found");
         }
         return productsInventoriesFound.stream()
                 .map(ProductInventoryMapper::productInventoryToResponseProductInventoryDetail)
@@ -34,14 +33,14 @@ public class ProductInventoryService {
 
     public ResponseProductInventoryDetailDto findProductInventoryById(UUID id) {
         ProductInventory productInventoryFound = productInventoryRepository.findById(id)
-                .orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND));// Create an Exception Handler for when ProductInventory is not found
+                .orElseThrow(() -> new ProductInventoryNotFoundException("Product Inventory not found by this id: " + id));
 
         return ProductInventoryMapper.productInventoryToResponseProductInventoryDetail(productInventoryFound);
     }
 
     public ResponseProductInventoryDetailDto updateQuantity(UUID id, PatchProductInventoryQuantityDto patchProductInventoryQuantity){
         ProductInventory productInventoryFound = productInventoryRepository.findById(id)
-                .orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND));// Create an Exception Handler for when ProductInventory is not found
+                .orElseThrow(() -> new ProductInventoryNotFoundException("Product Inventory not found by this id: " + id));
 
         ProductInventoryMapper.patchProductInventoryQuantity(productInventoryFound, patchProductInventoryQuantity);
         productInventoryRepository.save(productInventoryFound);
@@ -51,7 +50,7 @@ public class ProductInventoryService {
 
     public ResponseProductInventoryDetailDto updateLowStockThreshold(UUID id, PatchProductInventoryLowStockThresholdDto patchProductInventoryLowStockThreshold) {
         ProductInventory productInventoryFound = productInventoryRepository.findById(id)
-                .orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND));// Create an Exception Handler for when ProductInventory is not found
+                .orElseThrow(() -> new ProductInventoryNotFoundException("Product Inventory not found by this id: " + id));
 
         ProductInventoryMapper.patchProductInventoryLowStockThreshold(productInventoryFound, patchProductInventoryLowStockThreshold);
         productInventoryRepository.save(productInventoryFound);
