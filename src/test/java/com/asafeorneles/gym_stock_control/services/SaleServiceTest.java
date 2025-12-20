@@ -9,6 +9,8 @@ import com.asafeorneles.gym_stock_control.entities.Product;
 import com.asafeorneles.gym_stock_control.entities.Sale;
 import com.asafeorneles.gym_stock_control.entities.SaleItem;
 import com.asafeorneles.gym_stock_control.enums.PaymentMethod;
+import com.asafeorneles.gym_stock_control.exceptions.ProductNotFoundException;
+import com.asafeorneles.gym_stock_control.exceptions.SaleNotFoundException;
 import com.asafeorneles.gym_stock_control.repositories.ProductRepository;
 import com.asafeorneles.gym_stock_control.repositories.SaleRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +23,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.web.ErrorResponseException;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -128,7 +129,7 @@ class SaleServiceTest {
                     .thenReturn(Optional.empty());
 
             // ASSERT
-            assertThrows(ErrorResponseException.class,() -> saleService.createSale(createSaleDto));
+            assertThrows(ProductNotFoundException.class,() -> saleService.createSale(createSaleDto));
 
             verify(productInventoryService, never()).updateQuantityAfterSale(any());
 
@@ -176,7 +177,7 @@ class SaleServiceTest {
             when(saleRepository.findAll(any(Specification.class))).thenReturn(List.of());
 
             // ASSERT
-            assertThrows(ErrorResponseException.class, ()-> saleService.findSales(Specification.unrestricted()));
+            assertThrows(SaleNotFoundException.class, ()-> saleService.findSales(Specification.unrestricted()));
             verify(saleRepository, times(1)).findAll(any(Specification.class));
         }
     }
@@ -203,7 +204,7 @@ class SaleServiceTest {
             when(saleRepository.findById(sale.getSaleId())).thenReturn(Optional.empty());
 
             // ASSERT
-            assertThrows(ErrorResponseException.class, ()-> saleService.findSaleById(sale.getSaleId()));
+            assertThrows(SaleNotFoundException.class, ()-> saleService.findSaleById(sale.getSaleId()));
             verify(saleRepository, times(1)).findById(sale.getSaleId());
         }
     }
@@ -233,7 +234,7 @@ class SaleServiceTest {
             when(saleRepository.findById(sale.getSaleId())).thenReturn(Optional.empty());
 
             // ASSERT
-            assertThrows(ErrorResponseException.class, ()-> saleService.deleteSale(sale.getSaleId()));
+            assertThrows(SaleNotFoundException.class, ()-> saleService.deleteSale(sale.getSaleId()));
             verify(saleRepository, times(1)).findById(sale.getSaleId());
             verify(saleRepository, never()).deleteById(sale.getSaleId());
         }
@@ -275,7 +276,7 @@ class SaleServiceTest {
             when(saleRepository.findById(sale.getSaleId())).thenReturn(Optional.empty());
 
             // ASSERT
-            assertThrows(ErrorResponseException.class, ()-> saleService.updatePaymentMethod(sale.getSaleId(), patchPaymentMethodDto));
+            assertThrows(SaleNotFoundException.class, ()-> saleService.updatePaymentMethod(sale.getSaleId(), patchPaymentMethodDto));
             verify(saleRepository, times(1)).findById(sale.getSaleId());
             verify(saleRepository, never()).save(any(Sale.class));
         }
