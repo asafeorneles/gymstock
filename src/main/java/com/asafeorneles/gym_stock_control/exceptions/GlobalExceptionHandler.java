@@ -10,22 +10,27 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ProductNotFoundException.class)
-    public ResponseEntity<String> productNotFoundExceptionHandler(ProductNotFoundException e){
+    public ResponseEntity<String> productNotFoundExceptionHandler(ProductNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 
     @ExceptionHandler(CategoryNotFoundException.class)
-    public ResponseEntity<String> categoryNotFoundExceptionHandler(CategoryNotFoundException e){
+    public ResponseEntity<String> categoryNotFoundExceptionHandler(CategoryNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 
     @ExceptionHandler(SaleNotFoundException.class)
-    public ResponseEntity<String> saleNotFoundExceptionHandler (SaleNotFoundException e){
+    public ResponseEntity<String> saleNotFoundExceptionHandler(SaleNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
     }
 
     @ExceptionHandler(ProductInventoryNotFoundException.class)
-    public ResponseEntity<String> productInventoryNotFoundExceptionHandler(ProductInventoryNotFoundException e){
+    public ResponseEntity<String> productInventoryNotFoundExceptionHandler(ProductInventoryNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+    }
+
+    @ExceptionHandler(InsufficientProductQuantityException.class)
+    public ResponseEntity<String> insufficientProductQuantityExceptionHandler(InsufficientProductQuantityException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
     }
 }
