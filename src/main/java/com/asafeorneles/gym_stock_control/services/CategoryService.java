@@ -7,11 +7,8 @@ import com.asafeorneles.gym_stock_control.entities.Category;
 import com.asafeorneles.gym_stock_control.exceptions.CategoryNotFoundException;
 import com.asafeorneles.gym_stock_control.mapper.CategoryMapper;
 import com.asafeorneles.gym_stock_control.repositories.CategoryRepository;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.ErrorResponseException;
 
 import java.util.List;
 import java.util.UUID;
