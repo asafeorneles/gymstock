@@ -8,16 +8,15 @@ import com.asafeorneles.gym_stock_control.entities.Product;
 import com.asafeorneles.gym_stock_control.entities.Sale;
 import com.asafeorneles.gym_stock_control.entities.SaleItem;
 import com.asafeorneles.gym_stock_control.exceptions.ProductNotFoundException;
+import com.asafeorneles.gym_stock_control.exceptions.SaleNotFoundException;
 import com.asafeorneles.gym_stock_control.mapper.SaleMapper;
 import com.asafeorneles.gym_stock_control.repositories.ProductRepository;
 import com.asafeorneles.gym_stock_control.repositories.SaleRepository;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.ErrorResponseException;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -79,7 +78,7 @@ public class SaleService {
         List<Sale> salesFound = saleRepository.findAll(specification);
 
         if (salesFound.isEmpty()) {
-            throw new ErrorResponseException(HttpStatus.NOT_FOUND); // Create an Exception Handler for when Sale does not exist
+            throw new SaleNotFoundException("Sales not found");
         }
 
         return salesFound.stream().map(SaleMapper::saleToResponseSale).toList();
@@ -87,21 +86,21 @@ public class SaleService {
 
     public ResponseSaleDto findSaleById(UUID id) {
         Sale saleFound = saleRepository.findById(id)
-                .orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND)); // Create an Exception Handler for when Sale does not exist
+                .orElseThrow(() -> new SaleNotFoundException("No sales registered with id {" + id + "}"));
 
         return SaleMapper.saleToResponseSale(saleFound);
     }
 
     public void deleteSale(UUID id) {
         Sale saleFound = saleRepository.findById(id)
-                .orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND)); // Create an Exception Handler for when Sale does not exist
+                .orElseThrow(() -> new SaleNotFoundException("No sales registered with id {" + id + "}"));
 
         saleRepository.delete(saleFound);
     }
 
     public ResponseSaleDto updatePaymentMethod(UUID id, PatchPaymentMethodDto patchPaymentMethod) {
         Sale saleFound = saleRepository.findById(id)
-                .orElseThrow(() -> new ErrorResponseException(HttpStatus.NOT_FOUND)); // Create an Exception Handler for when Sale does not exist
+                .orElseThrow(() -> new SaleNotFoundException("No sales registered with id {" + id + "}"));
 
         saleFound.setPaymentMethod(patchPaymentMethod.paymentMethod());
         saleRepository.save(saleFound);
