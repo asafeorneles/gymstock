@@ -7,6 +7,8 @@ import com.asafeorneles.gym_stock_control.dtos.product.UpdateProductDto;
 import com.asafeorneles.gym_stock_control.entities.Category;
 import com.asafeorneles.gym_stock_control.entities.Product;
 import com.asafeorneles.gym_stock_control.entities.ProductInventory;
+import com.asafeorneles.gym_stock_control.exceptions.CategoryNotFoundException;
+import com.asafeorneles.gym_stock_control.exceptions.ProductNotFoundException;
 import com.asafeorneles.gym_stock_control.repositories.CategoryRepository;
 import com.asafeorneles.gym_stock_control.repositories.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -235,7 +237,7 @@ class ProductServiceTest {
             when(productRepository.findById(falseId)).thenReturn(Optional.empty());
 
             // ASSERT
-            assertThrows(ErrorResponseException.class, () -> productService.findProductById(falseId));
+            assertThrows(ProductNotFoundException.class, () -> productService.findProductById(falseId));
             verify(productRepository, times(1)).findById(falseId);
         }
     }
@@ -268,7 +270,7 @@ class ProductServiceTest {
             when(productRepository.findProductWithLowStock()).thenReturn(List.of());
 
             // ASSERT
-            assertThrows(ErrorResponseException.class, () -> productService.findProductsWithLowStock());
+            assertThrows(ProductNotFoundException.class, () -> productService.findProductsWithLowStock());
             verify(productRepository, times(1)).findProductWithLowStock();
         }
     }
@@ -313,7 +315,7 @@ class ProductServiceTest {
             when(productRepository.findById(product.getProductId())).thenReturn(Optional.empty());
 
             // ASSERTS
-            assertThrows(ErrorResponseException.class, () -> productService.updateProduct(product.getProductId(), updateProductDto));
+            assertThrows(ProductNotFoundException.class, () -> productService.updateProduct(product.getProductId(), updateProductDto));
             verify(productRepository, times(1)).findById(product.getProductId());
         }
 
@@ -324,7 +326,7 @@ class ProductServiceTest {
             when(categoryRepository.findById((product.getCategory().getCategoryId()))).thenReturn(Optional.empty());
 
             // ASSERTS
-            assertThrows(ErrorResponseException.class, () -> productService.updateProduct(product.getProductId(), updateProductDto));
+            assertThrows(CategoryNotFoundException.class, () -> productService.updateProduct(product.getProductId(), updateProductDto));
             verify(productRepository, times(1)).findById(product.getProductId());
             verify(categoryRepository, times(1)).findById(product.getCategory().getCategoryId());
         }
@@ -372,7 +374,7 @@ class ProductServiceTest {
             when(productRepository.findById(product.getProductId())).thenReturn(Optional.empty());
 
             // ASSERTS
-            assertThrows(ErrorResponseException.class, () -> productService.deleteProduct(product.getProductId()));
+            assertThrows(ProductNotFoundException.class, () -> productService.deleteProduct(product.getProductId()));
             verify(productRepository, times(1)).findById(product.getProductId());
         }
     }
