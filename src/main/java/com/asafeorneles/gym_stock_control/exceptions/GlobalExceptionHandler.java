@@ -70,4 +70,17 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 )
         );
     }
+
+    @ExceptionHandler(ProductAlreadyExistsException.class)
+    public ResponseEntity<ResponseException> productAlreadyExistsExceptionHandler(ProductAlreadyExistsException e){
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                new ResponseException(
+                        409,
+                        "CONFLICT",
+                        e.getMessage(),
+                        LocalDateTime.now()
+                )
+        );
+    }
+
 }
