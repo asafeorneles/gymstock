@@ -7,6 +7,7 @@ import com.asafeorneles.gym_stock_control.dtos.product.UpdateProductDto;
 import com.asafeorneles.gym_stock_control.entities.Category;
 import com.asafeorneles.gym_stock_control.entities.Product;
 import com.asafeorneles.gym_stock_control.exceptions.CategoryNotFoundException;
+import com.asafeorneles.gym_stock_control.exceptions.ProductAlreadyExistsException;
 import com.asafeorneles.gym_stock_control.exceptions.ProductNotFoundException;
 import com.asafeorneles.gym_stock_control.mapper.ProductMapper;
 import com.asafeorneles.gym_stock_control.repositories.CategoryRepository;
@@ -33,7 +34,7 @@ public class ProductService {
                 .orElseThrow(() -> new CategoryNotFoundException("The category {" + categoryId + "} does not exist. Please insert a valid category."));
 
         if (productRepository.existsByNameAndBrand(createProductDto.name(), createProductDto.brand())) {
-            throw new IllegalArgumentException("product already exists");
+            throw new ProductAlreadyExistsException("Product already exists");
         }
 
         // CreateProductDto -> Product
@@ -53,7 +54,7 @@ public class ProductService {
     public List<ResponseProductDto> findProducts(Specification<Product> specification) {
         List<Product> productsFound = productRepository.findAll(specification);
         if (productsFound.isEmpty()) {
-            throw new ProductNotFoundException("Products not found.");
+            throw new ProductNotFoundException("Products not found or do not exist..");
         }
         return productsFound.stream().map(ProductMapper::productToResponseProduct).toList();
     }
