@@ -27,20 +27,20 @@ public class CategoryService {
     public List<ResponseCategoryDto> findCategory() {
         List<Category> categoriesFound = categoryRepository.findAll();
         if (categoriesFound.isEmpty()){
-            throw new CategoryNotFoundException("Categories not found");
+            throw new CategoryNotFoundException("Categories not found or do not exist");
         }
         return categoriesFound.stream().map(CategoryMapper::categoryToResponseCategory).toList();
     }
 
     public ResponseCategoryDto findCategoryById(UUID id) {
         Category categoryFound = categoryRepository
-                .findById(id).orElseThrow(() -> new CategoryNotFoundException("Category not found by id" + id));
+                .findById(id).orElseThrow(() -> new CategoryNotFoundException("Category not found by id: " + id));
         return CategoryMapper.categoryToResponseCategory(categoryFound);
     }
 
     public ResponseCategoryDto updateCategory(UUID id, UpdateCategoryDto updateCategoryDto) {
         Category categoryFound = categoryRepository
-                .findById(id).orElseThrow(() -> new CategoryNotFoundException("Category not found by id" + id));
+                .findById(id).orElseThrow(() -> new CategoryNotFoundException("Category not found by id: " + id));
 
         CategoryMapper.updateCategoryToCategory(categoryFound, updateCategoryDto);
 
@@ -51,7 +51,7 @@ public class CategoryService {
 
     public void deleteCategory(UUID id) {
         Category categoryFound = categoryRepository
-                .findById(id).orElseThrow(() -> new CategoryNotFoundException("Category not found by id" + id));
+                .findById(id).orElseThrow(() -> new CategoryNotFoundException("Category not found by id: " + id));
 
         categoryRepository.delete(categoryFound);
     }

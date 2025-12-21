@@ -32,6 +32,7 @@ public class ProductService {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new CategoryNotFoundException("The category {" + categoryId + "} does not exist. Please insert a valid category."));
 
+        ///  ////////////////////
         if (productRepository.existsByNameAndBrand(createProductDto.name(), createProductDto.brand())) {
             throw new IllegalArgumentException("product already exists");
         }
@@ -53,7 +54,7 @@ public class ProductService {
     public List<ResponseProductDto> findProducts(Specification<Product> specification) {
         List<Product> productsFound = productRepository.findAll(specification);
         if (productsFound.isEmpty()) {
-            throw new ProductNotFoundException("Products not found.");
+            throw new ProductNotFoundException("Products not found or do not exist..");
         }
         return productsFound.stream().map(ProductMapper::productToResponseProduct).toList();
     }
