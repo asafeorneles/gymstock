@@ -27,10 +27,10 @@ public class ProductInventory {
     @Column(name = "quantity")
     private int quantity;
 
-    @Column(name = "low_stock_threshould")
+    @Column(name = "low_stock_threshold")
     private int lowStockThreshold;
 
-    @Column(name = "update_date")
+    @Column(name = "updated_date")
     private LocalDateTime updated_date;
 
     @PreUpdate
