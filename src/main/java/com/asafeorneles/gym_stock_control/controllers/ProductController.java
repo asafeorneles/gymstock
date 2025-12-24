@@ -1,9 +1,6 @@
 package com.asafeorneles.gym_stock_control.controllers;
 
-import com.asafeorneles.gym_stock_control.dtos.product.CreateProductDto;
-import com.asafeorneles.gym_stock_control.dtos.product.ResponseProductDetailDto;
-import com.asafeorneles.gym_stock_control.dtos.product.ResponseProductDto;
-import com.asafeorneles.gym_stock_control.dtos.product.UpdateProductDto;
+import com.asafeorneles.gym_stock_control.dtos.product.*;
 import com.asafeorneles.gym_stock_control.queryFilters.ProductDetailsQueryFilters;
 import com.asafeorneles.gym_stock_control.queryFilters.ProductQueryFilters;
 import com.asafeorneles.gym_stock_control.services.ProductService;
@@ -99,6 +96,32 @@ public class ProductController {
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseProductDetailDto> updateProduct(@PathVariable(name = "id") UUID id, @RequestBody @Valid UpdateProductDto updateProductDto){
         return ResponseEntity.status(HttpStatus.OK).body(productService.updateProduct(id, updateProductDto));
+    }
+
+    @Operation(summary = "Deactivate a product")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Product deactivated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request data"),
+            @ApiResponse(responseCode = "404", description = "Product not found"),
+            @ApiResponse(responseCode = "409", description = "Product is already inactive!"),
+            @ApiResponse(responseCode = "500", description = "Unexpected server error")
+    })
+    @PatchMapping(value = "/{id}/deactivate", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResponseProductDetailDto> deactivateProduct(@PathVariable(name = "id") UUID id, @RequestBody @Valid DeactivateProductDto deactivateProductDto){
+        return ResponseEntity.status(HttpStatus.OK).body(productService.deactivateProduct(id, deactivateProductDto));
+    }
+
+    @Operation(summary = "Deactivate a product")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Product activated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request data"),
+            @ApiResponse(responseCode = "404", description = "Product not found"),
+            @ApiResponse(responseCode = "409", description = "Product is already active!"),
+            @ApiResponse(responseCode = "500", description = "Unexpected server error")
+    })
+    @PatchMapping(value = "/{id}/activate")
+    public ResponseEntity<ResponseProductDetailDto> activateProduct(@PathVariable(name = "id") UUID id){
+        return ResponseEntity.status(HttpStatus.OK).body(productService.activateProduct(id));
     }
 
     @Operation(summary = "Delete a product")

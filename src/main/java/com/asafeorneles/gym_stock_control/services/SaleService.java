@@ -54,7 +54,8 @@ public class SaleService {
         for (CreateSaleItemDto createSaleItem : createSaleItemDtoList) {
             UUID productId = createSaleItem.productId();
             Product product = productRepository.findById(productId)
-                    .orElseThrow(() -> new ProductNotFoundException("Product not found by this id: " + productId));
+                    .filter(Product::isActivity)
+                    .orElseThrow(() -> new ProductNotFoundException("Product not found by id: " + productId));
 
             productInventoryService.validateQuantity(product, createSaleItem.quantity());
 

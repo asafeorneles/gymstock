@@ -1,5 +1,8 @@
 package com.asafeorneles.gym_stock_control.entities;
 
+import com.asafeorneles.gym_stock_control.enums.ActivityStatus;
+import com.asafeorneles.gym_stock_control.exceptions.ProductAlreadyActiveException;
+import com.asafeorneles.gym_stock_control.exceptions.ProductAlreadyInactivityException;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -40,6 +43,13 @@ public class Product {
     @OneToOne(mappedBy = "product", cascade = CascadeType.ALL)
     private ProductInventory inventory;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "activity_status", nullable = false)
+    private ActivityStatus activityStatus;
+
+    @Column(name = "inactivity_reason")
+    private String inactivityReason;
+
     @Column(name = "created_date")
     private LocalDateTime createdDate;
 
@@ -54,6 +64,27 @@ public class Product {
     @PreUpdate
     public void preUpdate() {
         this.updatedDate = LocalDateTime.now();
+    }
+
+    public void inactivity(String inactivityReason){
+        if (this.activityStatus == ActivityStatus.INACTIVITY){
+            throw new ProductAlreadyInactivityException("Product is already inactive!");
+        }
+
+        this.activityStatus = ActivityStatus.INACTIVITY;
+        this.inactivityReason = inactivityReason;
+    }
+
+    public void activity(){
+        if (this.activityStatus == ActivityStatus.ACTIVE){
+            throw new ProductAlreadyActiveException("Product is already active!");
+        }
+        this.activityStatus = ActivityStatus.ACTIVE;
+        this.inactivityReason = null;
+    }
+
+    public boolean isActivity(){
+        return this.activityStatus == ActivityStatus.ACTIVE;
     }
 
     @Builder
