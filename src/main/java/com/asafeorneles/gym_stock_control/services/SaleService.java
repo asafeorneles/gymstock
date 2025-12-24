@@ -78,10 +78,6 @@ public class SaleService {
     public List<ResponseSaleDto> findSales(Specification<Sale> specification) {
         List<Sale> salesFound = saleRepository.findAll(specification);
 
-        if (salesFound.isEmpty()) {
-            throw new SaleNotFoundException("Sales not found");
-        }
-
         return salesFound.stream().map(SaleMapper::saleToResponseSale).toList();
     }
 

@@ -26,9 +26,7 @@ public class CategoryService {
 
     public List<ResponseCategoryDto> findCategory() {
         List<Category> categoriesFound = categoryRepository.findAll();
-        if (categoriesFound.isEmpty()){
-            throw new CategoryNotFoundException("Categories not found or do not exist");
-        }
+
         return categoriesFound.stream().map(CategoryMapper::categoryToResponseCategory).toList();
     }
 

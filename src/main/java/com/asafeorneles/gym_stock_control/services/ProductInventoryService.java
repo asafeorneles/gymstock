@@ -25,9 +25,7 @@ public class ProductInventoryService {
 
     public List<ResponseProductInventoryDetailDto> findProductsInventories() {
         List<ProductInventory> productsInventoriesFound = productInventoryRepository.findAll();
-        if (productsInventoriesFound.isEmpty()) {
-            throw new ProductInventoryNotFoundException("Products Inventories not found");
-        }
+
         return productsInventoriesFound.stream()
                 .map(ProductInventoryMapper::productInventoryToResponseProductInventoryDetail)
                 .toList();

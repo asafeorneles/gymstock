@@ -51,17 +51,11 @@ public class ProductService {
 
     public List<ResponseProductDto> findProducts(Specification<Product> specification) {
         List<Product> productsFound = productRepository.findAll(specification);
-        if (productsFound.isEmpty()) {
-            throw new ProductNotFoundException("Products not found or do not exist..");
-        }
         return productsFound.stream().map(ProductMapper::productToResponseProduct).toList();
     }
 
     public List<ResponseProductDetailDto> findProductsDetails(Specification<Product> specification) {
         List<Product> productsFound = productRepository.findAll(specification);
-        if (productsFound.isEmpty()) {
-            throw new ProductNotFoundException("Products not found.");
-        }
         return productsFound.stream().map(ProductMapper::productToResponseCreatedProduct).toList();
     }
 
@@ -73,15 +67,10 @@ public class ProductService {
     }
 
     public List<ResponseProductDetailDto> findProductsWithLowStock() {
-        List<ResponseProductDetailDto> productsWithLowStock = productRepository.findProductWithLowStock()
+        return productRepository.findProductWithLowStock()
                 .stream()
                 .map(ProductMapper::productToResponseCreatedProduct)
                 .toList();
-
-        if (productsWithLowStock.isEmpty()) {
-            throw new ProductNotFoundException("Products with low stock not found");
-        }
-        return productsWithLowStock;
     }
 
     public ResponseProductDetailDto updateProduct(UUID id, UpdateProductDto updateProductDto) {
@@ -102,6 +91,7 @@ public class ProductService {
     public void deleteProduct(UUID id) {
         Product productFound = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException("Product not found by id: " + id));
+        
         productRepository.delete(productFound);
     }
 
