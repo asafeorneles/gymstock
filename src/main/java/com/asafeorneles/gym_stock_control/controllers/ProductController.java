@@ -98,6 +98,16 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).body(productService.updateProduct(id, updateProductDto));
     }
 
+    @PatchMapping(value = "/{id}/deactivate", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<ResponseProductDetailDto> deactivateProduct(@PathVariable(name = "id") UUID id, @RequestBody @Valid DeactivateProductDto deactivateProductDto){
+        return ResponseEntity.status(HttpStatus.OK).body(productService.deactivateProduct(id, deactivateProductDto));
+    }
+
+    @PatchMapping(value = "/{id}/activate")
+    public ResponseEntity<ResponseProductDetailDto> activateProduct(@PathVariable(name = "id") UUID id){
+        return ResponseEntity.status(HttpStatus.OK).body(productService.activateProduct(id));
+    }
+
     @Operation(summary = "Delete a product")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Product deleted successfully"),
