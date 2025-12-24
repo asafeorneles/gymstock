@@ -84,4 +84,28 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         );
     }
 
+    @ExceptionHandler(ProductAlreadyInactivityException.class)
+    public ResponseEntity<ResponseException> productAlreadyInactivityExceptionHandler(ProductAlreadyInactivityException e){
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                new ResponseException(
+                        409,
+                        "CONFLICT",
+                        e.getMessage(),
+                        LocalDateTime.now()
+                )
+        );
+    }
+
+    @ExceptionHandler(ProductAlreadyActiveException.class)
+    public ResponseEntity<ResponseException> productAlreadyInactivityExceptionHandler(ProductAlreadyActiveException e){
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                new ResponseException(
+                        409,
+                        "CONFLICT",
+                        e.getMessage(),
+                        LocalDateTime.now()
+                )
+        );
+    }
+
 }
