@@ -15,6 +15,7 @@ public record ResponseProductDetailDto(
         BigDecimal costPrice,
         ResponseCategoryDto category,
         ResponseProductInventoryDto inventory,
-        ActivityStatus activityStatus
+        ActivityStatus activityStatus,
+        String InactivityReason
 ) {
 }
