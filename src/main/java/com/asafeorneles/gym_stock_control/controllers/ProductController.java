@@ -111,7 +111,7 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).body(productService.deactivateProduct(id, deactivateProductDto));
     }
 
-    @Operation(summary = "Deactivate a product")
+    @Operation(summary = "Activate a product")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Product activated successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid request data"),
