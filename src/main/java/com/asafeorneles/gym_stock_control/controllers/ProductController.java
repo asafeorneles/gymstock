@@ -1,9 +1,6 @@
 package com.asafeorneles.gym_stock_control.controllers;
 
-import com.asafeorneles.gym_stock_control.dtos.product.CreateProductDto;
-import com.asafeorneles.gym_stock_control.dtos.product.ResponseProductDetailDto;
-import com.asafeorneles.gym_stock_control.dtos.product.ResponseProductDto;
-import com.asafeorneles.gym_stock_control.dtos.product.UpdateProductDto;
+import com.asafeorneles.gym_stock_control.dtos.product.*;
 import com.asafeorneles.gym_stock_control.queryFilters.ProductDetailsQueryFilters;
 import com.asafeorneles.gym_stock_control.queryFilters.ProductQueryFilters;
 import com.asafeorneles.gym_stock_control.services.ProductService;

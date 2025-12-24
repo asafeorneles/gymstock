@@ -30,6 +30,7 @@ public class ProductQueryFilters {
                 .and(costPriceEqual(costPrice))
                 .and(costPriceGreaterThanOrEqualTo(costPriceMin))
                 .and(costPriceLessThanOrEqualTo(costPriceMax))
-                .and(categoryIdEqual(categoryId));
+                .and(categoryIdEqual(categoryId))
+                .and(isActivity());
     }
 }
