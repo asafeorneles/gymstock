@@ -104,4 +104,27 @@ public class ProductService {
                 .orElseThrow(() -> new ProductNotFoundException("Product not found by id: " + id));
         productRepository.delete(productFound);
     }
+
+
+    public ResponseProductDetailDto deactivateProduct(UUID id, DeactivateProductDto deactivateProductDto) {
+        Product productFound = productRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException("Product not found by id: " + id));
+
+        productFound.inactivity(deactivateProductDto.reason());
+
+        productRepository.save(productFound);
+
+        return ProductMapper.productToResponseCreatedProduct(productFound);
+    }
+
+    public ResponseProductDetailDto activateProduct(UUID id) {
+        Product productFound = productRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException("Product not found by id: " + id));
+
+        productFound.activity();
+
+        productRepository.save(productFound);
+
+        return ProductMapper.productToResponseCreatedProduct(productFound);
+    }
 }
