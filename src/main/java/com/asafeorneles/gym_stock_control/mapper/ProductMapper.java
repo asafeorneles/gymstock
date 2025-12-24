@@ -36,7 +36,8 @@ public class ProductMapper {
                 product.getPrice(),
                 product.getCostPrice(),
                 new ResponseCategoryDto(product.getCategory().getCategoryId(), product.getCategory().getName(), product.getCategory().getDescription()),
-                new ResponseProductInventoryDto(product.getInventory().getQuantity(), product.getInventory().getLowStockThreshold(), product.getInventory().getInventoryStatus())
+                new ResponseProductInventoryDto(product.getInventory().getQuantity(), product.getInventory().getLowStockThreshold(), product.getInventory().getInventoryStatus()),
+                product.getActivityStatus()
         );
     }
 
