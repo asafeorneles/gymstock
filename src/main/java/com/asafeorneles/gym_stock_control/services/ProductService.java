@@ -97,7 +97,7 @@ public class ProductService {
         Product productFound = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException("Product not found by id: " + id));
 
-        if (saleItemRepository.existsByProduct_id(id)){
+        if (saleItemRepository.existsByProduct_ProductId(id)){
             throw new ProductSoldException("This product has already been used in a sale. Please use the deactivate option.");
         }
 
