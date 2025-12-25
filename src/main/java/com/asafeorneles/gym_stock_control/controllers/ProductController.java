@@ -1,7 +1,7 @@
 package com.asafeorneles.gym_stock_control.controllers;
 
 import com.asafeorneles.gym_stock_control.dtos.product.*;
-import com.asafeorneles.gym_stock_control.queryFilters.ProductDetailsQueryFilters;
+import com.asafeorneles.gym_stock_control.queryFilters.ProductAdminQueryFilters;
 import com.asafeorneles.gym_stock_control.queryFilters.ProductQueryFilters;
 import com.asafeorneles.gym_stock_control.services.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -50,15 +50,15 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).body(productService.findProducts(filters.toSpecification()));
     }
 
-    @Operation(summary = "Get all products with details")
+    @Operation(summary = "Get all products with all details")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Product returned successfully"),
             @ApiResponse(responseCode = "404", description = "Products not found"),
             @ApiResponse(responseCode = "400", description = "Invalid filter parameters"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
-    @GetMapping("/details")
-    public ResponseEntity<List<ResponseProductDetailDto>> findProductsDetails(@ParameterObject ProductDetailsQueryFilters filters) {
+    @GetMapping("/admin")
+    public ResponseEntity<List<ResponseProductDetailDto>> findProductsDetails(@ParameterObject ProductAdminQueryFilters filters) {
         return ResponseEntity.status(HttpStatus.OK).body(productService.findProductsDetails(filters.toSpecification()));
     }
 

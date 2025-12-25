@@ -51,7 +51,7 @@ public class ProductService {
 
         productRepository.save(product);
 
-        return ProductMapper.productToResponseCreatedProduct(product);
+        return ProductMapper.productToResponseDetailsProduct(product);
     }
 
     public List<ResponseProductDto> findProducts(Specification<Product> specification) {
@@ -59,7 +59,7 @@ public class ProductService {
     }
 
     public List<ResponseProductDetailDto> findProductsDetails(Specification<Product> specification) {
-        return productRepository.findAll(specification).stream().map(ProductMapper::productToResponseCreatedProduct).toList();
+        return productRepository.findAll(specification).stream().map(ProductMapper::productToResponseDetailsProduct).toList();
     }
 
     public ResponseProductDto findProductById(UUID id) {
@@ -72,7 +72,7 @@ public class ProductService {
     public List<ResponseProductDetailDto> findProductsWithLowStock() {
         return productRepository.findProductWithLowStock()
                 .stream()
-                .map(ProductMapper::productToResponseCreatedProduct)
+                .map(ProductMapper::productToResponseDetailsProduct)
                 .toList();
     }
 
@@ -89,7 +89,7 @@ public class ProductService {
 
         productRepository.save(productFound);
 
-        return ProductMapper.productToResponseCreatedProduct(productFound);
+        return ProductMapper.productToResponseDetailsProduct(productFound);
     }
 
     @Transactional
@@ -114,7 +114,7 @@ public class ProductService {
 
         productRepository.save(productFound);
 
-        return ProductMapper.productToResponseCreatedProduct(productFound);
+        return ProductMapper.productToResponseDetailsProduct(productFound);
     }
 
     @Transactional
@@ -126,6 +126,6 @@ public class ProductService {
 
         productRepository.save(productFound);
 
-        return ProductMapper.productToResponseCreatedProduct(productFound);
+        return ProductMapper.productToResponseDetailsProduct(productFound);
     }
 }

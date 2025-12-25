@@ -28,7 +28,7 @@ public class ProductMapper {
         product.setCategory(category);
     }
 
-    public static ResponseProductDetailDto productToResponseCreatedProduct(Product product) {
+    public static ResponseProductDetailDto productToResponseDetailsProduct(Product product) {
         return new ResponseProductDetailDto(
                 product.getProductId(),
                 product.getName(),
