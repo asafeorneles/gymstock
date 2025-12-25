@@ -76,16 +76,13 @@ public class SaleService {
     }
 
     public List<ResponseSaleDto> findSales(Specification<Sale> specification) {
-        List<Sale> salesFound = saleRepository.findAll(specification);
-
-        return salesFound.stream().map(SaleMapper::saleToResponseSale).toList();
+        return saleRepository.findAll(specification).stream().map(SaleMapper::saleToResponseSale).toList();
     }
 
     public ResponseSaleDto findSaleById(UUID id) {
-        Sale saleFound = saleRepository.findById(id)
+        return saleRepository.findById(id)
+                .map(SaleMapper::saleToResponseSale)
                 .orElseThrow(() -> new SaleNotFoundException("No sales registered with id {" + id + "}"));
-
-        return SaleMapper.saleToResponseSale(saleFound);
     }
 
     public void deleteSale(UUID id) {

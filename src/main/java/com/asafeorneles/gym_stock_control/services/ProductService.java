@@ -49,20 +49,18 @@ public class ProductService {
     }
 
     public List<ResponseProductDto> findProducts(Specification<Product> specification) {
-        List<Product> productsFound = productRepository.findAll(specification);
-        return productsFound.stream().map(ProductMapper::productToResponseProduct).toList();
+        return productRepository.findAll(specification).stream().map(ProductMapper::productToResponseProduct).toList();
     }
 
     public List<ResponseProductDetailDto> findProductsDetails(Specification<Product> specification) {
-        List<Product> productsFound = productRepository.findAll(specification);
-        return productsFound.stream().map(ProductMapper::productToResponseCreatedProduct).toList();
+        return productRepository.findAll(specification).stream().map(ProductMapper::productToResponseCreatedProduct).toList();
     }
 
     public ResponseProductDto findProductById(UUID id) {
-        Product productFound = productRepository.findById(id)
+        return productRepository.findById(id)
                 .filter(Product::isActivity)
+                .map(ProductMapper::productToResponseProduct)
                 .orElseThrow(() -> new ProductNotFoundException("Product not found by id: " + id));
-        return ProductMapper.productToResponseProduct(productFound);
     }
 
     public List<ResponseProductDetailDto> findProductsWithLowStock() {
@@ -87,6 +85,7 @@ public class ProductService {
         return ProductMapper.productToResponseCreatedProduct(productFound);
     }
 
+    // Refactor to implements the logic for inactivate the product when it is in a sale
     public void deleteProduct(UUID id) {
         Product productFound = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException("Product not found by id: " + id));

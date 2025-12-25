@@ -24,18 +24,16 @@ public class ProductInventoryService {
     ProductInventoryRepository productInventoryRepository;
 
     public List<ResponseProductInventoryDetailDto> findProductsInventories() {
-        List<ProductInventory> productsInventoriesFound = productInventoryRepository.findAll();
-
-        return productsInventoriesFound.stream()
+        return productInventoryRepository.findAll()
+                .stream()
                 .map(ProductInventoryMapper::productInventoryToResponseProductInventoryDetail)
                 .toList();
     }
 
     public ResponseProductInventoryDetailDto findProductInventoryById(UUID id) {
-        ProductInventory productInventoryFound = productInventoryRepository.findById(id)
+        return productInventoryRepository.findById(id)
+                .map(ProductInventoryMapper::productInventoryToResponseProductInventoryDetail)
                 .orElseThrow(() -> new ProductInventoryNotFoundException("Product Inventory not found by this id: " + id));
-
-        return ProductInventoryMapper.productInventoryToResponseProductInventoryDetail(productInventoryFound);
     }
 
     public ResponseProductInventoryDetailDto updateQuantity(UUID id, PatchProductInventoryQuantityDto patchProductInventoryQuantity) {

@@ -25,15 +25,13 @@ public class CategoryService {
     }
 
     public List<ResponseCategoryDto> findCategory() {
-        List<Category> categoriesFound = categoryRepository.findAll();
-
-        return categoriesFound.stream().map(CategoryMapper::categoryToResponseCategory).toList();
+        return categoryRepository.findAll().stream().map(CategoryMapper::categoryToResponseCategory).toList();
     }
 
     public ResponseCategoryDto findCategoryById(UUID id) {
-        Category categoryFound = categoryRepository
-                .findById(id).orElseThrow(() -> new CategoryNotFoundException("Category not found by id: " + id));
-        return CategoryMapper.categoryToResponseCategory(categoryFound);
+        return categoryRepository.findById(id)
+                .map(CategoryMapper::categoryToResponseCategory)
+                .orElseThrow(() -> new CategoryNotFoundException("Category not found by id: " + id));
     }
 
     public ResponseCategoryDto updateCategory(UUID id, UpdateCategoryDto updateCategoryDto) {
