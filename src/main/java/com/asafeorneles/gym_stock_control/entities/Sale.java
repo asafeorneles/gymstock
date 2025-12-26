@@ -26,6 +26,10 @@ public class Sale {
     @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SaleItem> saleItems;
 
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "coupon_id", nullable = true)
+    private Coupon coupon;
+
     @Column(name = "total_price")
     private BigDecimal totalPrice;
 
