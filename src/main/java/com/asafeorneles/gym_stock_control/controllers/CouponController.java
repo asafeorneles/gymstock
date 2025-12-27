@@ -33,4 +33,10 @@ public class CouponController {
         return ResponseEntity.status(HttpStatus.CREATED).body(couponService.getCouponById(id));
     }
 
+    @DeleteMapping ("/{id}")
+    public ResponseEntity<String> deleteCoupon(@PathVariable(value = "id") UUID id){
+        couponService.deleteCoupon(id);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Coupon deleted successfully");
+    }
+
 }

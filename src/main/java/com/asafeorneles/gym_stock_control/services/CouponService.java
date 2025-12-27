@@ -7,9 +7,11 @@ import com.asafeorneles.gym_stock_control.entities.Sale;
 import com.asafeorneles.gym_stock_control.enums.ActivityStatus;
 import com.asafeorneles.gym_stock_control.enums.DiscountType;
 import com.asafeorneles.gym_stock_control.exceptions.CouponNotFoundException;
+import com.asafeorneles.gym_stock_control.exceptions.CouponUsedException;
 import com.asafeorneles.gym_stock_control.exceptions.InvalidCouponException;
 import com.asafeorneles.gym_stock_control.mapper.CouponMapper;
 import com.asafeorneles.gym_stock_control.repositories.CouponRepository;
+import com.asafeorneles.gym_stock_control.repositories.SaleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +25,9 @@ import java.util.UUID;
 public class CouponService {
     @Autowired
     CouponRepository couponRepository;
+
+    @Autowired
+    SaleRepository saleRepository;
 
     @Transactional
     public ResponseCouponDto createCoupon(CreateCouponDto createCouponDto) {
@@ -99,6 +104,18 @@ public class CouponService {
                 .map(CouponMapper::couponToResponseCoupon)
                 .orElseThrow(() -> new CouponNotFoundException("Coupon not found by id: " + id));
 
+    }
+
+    @Transactional
+    public void deleteCoupon(UUID id) {
+        Coupon coupon = couponRepository.findById(id)
+                .orElseThrow(() -> new CouponNotFoundException("Coupon not found by id: " + id));
+
+        if (saleRepository.existsByCoupon_CouponId(id)){
+            throw new CouponUsedException("This coupon has already been used in a sale. Please use the deactivate option.");
+        }
+
+        couponRepository.delete(coupon);
     }
 }
 
