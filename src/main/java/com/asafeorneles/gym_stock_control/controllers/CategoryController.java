@@ -1,7 +1,7 @@
 package com.asafeorneles.gym_stock_control.controllers;
 
 import com.asafeorneles.gym_stock_control.dtos.category.CreateCategoryDto;
-import com.asafeorneles.gym_stock_control.dtos.category.ResponseCategoryDto;
+import com.asafeorneles.gym_stock_control.dtos.category.ResponseCategoryDetailsDto;
 import com.asafeorneles.gym_stock_control.dtos.category.UpdateCategoryDto;
 import com.asafeorneles.gym_stock_control.services.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,7 +33,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseCategoryDto> createCategory(@RequestBody @Valid CreateCategoryDto createCategoryDto) {
+    public ResponseEntity<ResponseCategoryDetailsDto> createCategory(@RequestBody @Valid CreateCategoryDto createCategoryDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.createCategory(createCategoryDto));
     }
 
@@ -44,7 +44,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @GetMapping
-    public ResponseEntity<List<ResponseCategoryDto>> findCategories() {
+    public ResponseEntity<List<ResponseCategoryDetailsDto>> findCategories() {
         return ResponseEntity.status(HttpStatus.OK).body(categoryService.findCategory());
     }
 
@@ -56,7 +56,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseCategoryDto> findCategories(@PathVariable(name = "id") UUID id) {
+    public ResponseEntity<ResponseCategoryDetailsDto> findCategories(@PathVariable(name = "id") UUID id) {
         return ResponseEntity.status(HttpStatus.OK).body(categoryService.findCategoryById(id));
     }
 
@@ -69,8 +69,18 @@ public class CategoryController {
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ResponseCategoryDto> updateCategory(@PathVariable(name = "id") UUID id, @RequestBody @Valid UpdateCategoryDto updateCategoryDto) {
+    public ResponseEntity<ResponseCategoryDetailsDto> updateCategory(@PathVariable(name = "id") UUID id, @RequestBody @Valid UpdateCategoryDto updateCategoryDto) {
         return ResponseEntity.status(HttpStatus.OK).body(categoryService.updateCategory(id, updateCategoryDto));
+    }
+
+    @PatchMapping("/{id}/activate")
+    public ResponseEntity<ResponseCategoryDetailsDto> activateCategory(@PathVariable(value = "id") UUID id){
+        return ResponseEntity.status(HttpStatus.OK).body(categoryService.activateCategory(id));
+    }
+
+    @PatchMapping("/{id}/deactivate")
+    public ResponseEntity<ResponseCategoryDetailsDto> deactivateCategory(@PathVariable(value = "id") UUID id){
+        return ResponseEntity.status(HttpStatus.OK).body(categoryService.deactivateCategory(id));
     }
 
     @Operation(summary = "Delete a category")
