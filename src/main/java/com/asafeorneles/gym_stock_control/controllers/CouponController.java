@@ -14,5 +14,17 @@ import java.util.List;
 @RestController
 @RequestMapping("/coupon")
 public class CouponController {
+    @Autowired
+    CouponService couponService;
+
+    @PostMapping
+    public ResponseEntity<ResponseCouponDto> createCoupon(@RequestBody @Valid CreateCouponDto createCouponDto){
+        return ResponseEntity.status(HttpStatus.CREATED).body(couponService.createCoupon(createCouponDto));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ResponseCouponDto>> getAllCoupons(){
+        return ResponseEntity.status(HttpStatus.CREATED).body(couponService.getAllCoupons());
+    }
 
 }
