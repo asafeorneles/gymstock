@@ -1,6 +1,7 @@
 package com.asafeorneles.gym_stock_control.mapper;
 
 import com.asafeorneles.gym_stock_control.dtos.ProductInventory.ResponseProductInventoryDto;
+import com.asafeorneles.gym_stock_control.dtos.category.ResponseCategoryDetailsDto;
 import com.asafeorneles.gym_stock_control.dtos.category.ResponseCategoryDto;
 import com.asafeorneles.gym_stock_control.dtos.product.CreateProductDto;
 import com.asafeorneles.gym_stock_control.dtos.product.ResponseProductDetailDto;
@@ -35,7 +36,7 @@ public class ProductMapper {
                 product.getBrand(),
                 product.getPrice(),
                 product.getCostPrice(),
-                new ResponseCategoryDto(product.getCategory().getCategoryId(), product.getCategory().getName(), product.getCategory().getDescription()),
+                new ResponseCategoryDetailsDto(product.getCategory().getCategoryId(), product.getCategory().getName(), product.getCategory().getDescription(), product.getCategory().getActivityStatus()),
                 new ResponseProductInventoryDto(product.getInventory().getQuantity(), product.getInventory().getLowStockThreshold(), product.getInventory().getInventoryStatus()),
                 product.getActivityStatus(),
                 product.getInactivityReason()
@@ -48,7 +49,7 @@ public class ProductMapper {
                 product.getName(),
                 product.getBrand(),
                 product.getPrice(),
-                new ResponseCategoryDto(product.getCategory().getCategoryId(), product.getCategory().getName(), product.getCategory().getDescription())
+                new ResponseCategoryDto(product.getCategory().getCategoryId(), product.getCategory().getName())
         );
     }
 }

@@ -1,7 +1,7 @@
 package com.asafeorneles.gym_stock_control.mapper;
 
 import com.asafeorneles.gym_stock_control.dtos.category.CreateCategoryDto;
-import com.asafeorneles.gym_stock_control.dtos.category.ResponseCategoryDto;
+import com.asafeorneles.gym_stock_control.dtos.category.ResponseCategoryDetailsDto;
 import com.asafeorneles.gym_stock_control.dtos.category.UpdateCategoryDto;
 import com.asafeorneles.gym_stock_control.entities.Category;
 
@@ -18,11 +18,12 @@ public class CategoryMapper {
         category.setDescription(updateCategoryDto.description());
     }
 
-    public static ResponseCategoryDto categoryToResponseCategory(Category category){
-        return new ResponseCategoryDto(
+    public static ResponseCategoryDetailsDto categoryToResponseCategoryDetails(Category category){
+        return new ResponseCategoryDetailsDto(
                 category.getCategoryId(),
                 category.getName(),
-                category.getDescription()
+                category.getDescription(),
+                category.getActivityStatus()
         );
     }
 

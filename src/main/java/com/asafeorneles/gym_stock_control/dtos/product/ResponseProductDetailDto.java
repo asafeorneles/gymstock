@@ -1,7 +1,7 @@
 package com.asafeorneles.gym_stock_control.dtos.product;
 
 import com.asafeorneles.gym_stock_control.dtos.ProductInventory.ResponseProductInventoryDto;
-import com.asafeorneles.gym_stock_control.dtos.category.ResponseCategoryDto;
+import com.asafeorneles.gym_stock_control.dtos.category.ResponseCategoryDetailsDto;
 import com.asafeorneles.gym_stock_control.enums.ActivityStatus;
 
 import java.math.BigDecimal;
@@ -13,7 +13,7 @@ public record ResponseProductDetailDto(
         String brand,
         BigDecimal price,
         BigDecimal costPrice,
-        ResponseCategoryDto category,
+        ResponseCategoryDetailsDto category,
         ResponseProductInventoryDto inventory,
         ActivityStatus activityStatus,
         String InactivityReason

@@ -1,7 +1,7 @@
 package com.asafeorneles.gym_stock_control.services;
 
 import com.asafeorneles.gym_stock_control.dtos.category.CreateCategoryDto;
-import com.asafeorneles.gym_stock_control.dtos.category.ResponseCategoryDto;
+import com.asafeorneles.gym_stock_control.dtos.category.ResponseCategoryDetailsDto;
 import com.asafeorneles.gym_stock_control.dtos.category.UpdateCategoryDto;
 import com.asafeorneles.gym_stock_control.entities.Category;
 import com.asafeorneles.gym_stock_control.exceptions.CategoryNotFoundException;
@@ -15,7 +15,6 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.web.ErrorResponseException;
 
 import java.util.List;
 import java.util.Optional;
@@ -71,7 +70,7 @@ class CategoryServiceTest {
             when(categoryRepository.save(any(Category.class))).thenReturn(category);
 
             // ACT
-            ResponseCategoryDto responseCategory = categoryService.createCategory(createCategoryDto);
+            ResponseCategoryDetailsDto responseCategory = categoryService.createCategory(createCategoryDto);
 
             // ASSERT
             verify(categoryRepository).save(categoryArgumentCaptor.capture());
@@ -79,7 +78,7 @@ class CategoryServiceTest {
 
             assertNotNull(responseCategory);
 
-            // CreateCategoryDto -> ResponseCategoryDto
+            // CreateCategoryDto -> ResponseCategoryDetailsDto
             assertEquals(createCategoryDto.name(), responseCategory.name());
             assertEquals(createCategoryDto.description(), responseCategory.description());
 
@@ -107,7 +106,7 @@ class CategoryServiceTest {
             when(categoryRepository.findAll()).thenReturn(List.of(category));
 
             // ACT
-            List<ResponseCategoryDto> responseCategoriesFound = categoryService.findCategory();
+            List<ResponseCategoryDetailsDto> responseCategoriesFound = categoryService.findCategory();
 
             // ASSERT
             assertFalse(responseCategoriesFound.isEmpty());
@@ -137,7 +136,7 @@ class CategoryServiceTest {
             when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.of(category));
 
             // ACT
-            ResponseCategoryDto responseCategory = categoryService.findCategoryById(category.getCategoryId());
+            ResponseCategoryDetailsDto responseCategory = categoryService.findCategoryById(category.getCategoryId());
 
             // ASSERT
             verify(categoryRepository).findById(categoryIdArgumentCaptor.capture());
@@ -167,11 +166,11 @@ class CategoryServiceTest {
             when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.of(category));
             when(categoryRepository.save(any(Category.class))).thenReturn(category);
 
-            ResponseCategoryDto responseCategoryDto = categoryService.updateCategory(category.getCategoryId(), updateCategoryDto);
+            ResponseCategoryDetailsDto responseCategoryDetailsDto = categoryService.updateCategory(category.getCategoryId(), updateCategoryDto);
 
             // ASSERT
-            assertNotNull(responseCategoryDto);
-            assertEquals(category.getCategoryId(), responseCategoryDto.categoryId());
+            assertNotNull(responseCategoryDetailsDto);
+            assertEquals(category.getCategoryId(), responseCategoryDetailsDto.categoryId());
 
             verify(categoryRepository).save(categoryArgumentCaptor.capture());
             Category categoryCaptured = categoryArgumentCaptor.getValue();
@@ -180,9 +179,9 @@ class CategoryServiceTest {
             assertEquals(updateCategoryDto.name(), categoryCaptured.getName());
             assertEquals(updateCategoryDto.description(), categoryCaptured.getDescription());
 
-            // UpdateCategoryDto -> ResponseCategoryDto
-            assertEquals(updateCategoryDto.name(), responseCategoryDto.name());
-            assertEquals(updateCategoryDto.description(), responseCategoryDto.description());
+            // UpdateCategoryDto -> ResponseCategoryDetailsDto
+            assertEquals(updateCategoryDto.name(), responseCategoryDetailsDto.name());
+            assertEquals(updateCategoryDto.description(), responseCategoryDetailsDto.description());
         }
 
         @Test
