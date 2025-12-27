@@ -1,12 +1,14 @@
 package com.asafeorneles.gym_stock_control.services;
 
 import com.asafeorneles.gym_stock_control.dtos.category.CreateCategoryDto;
-import com.asafeorneles.gym_stock_control.dtos.category.ResponseCategoryDto;
+import com.asafeorneles.gym_stock_control.dtos.category.ResponseCategoryDetailsDto;
 import com.asafeorneles.gym_stock_control.dtos.category.UpdateCategoryDto;
 import com.asafeorneles.gym_stock_control.entities.Category;
+import com.asafeorneles.gym_stock_control.exceptions.CategoryAlreadyUsedException;
 import com.asafeorneles.gym_stock_control.exceptions.CategoryNotFoundException;
 import com.asafeorneles.gym_stock_control.mapper.CategoryMapper;
 import com.asafeorneles.gym_stock_control.repositories.CategoryRepository;
+import com.asafeorneles.gym_stock_control.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,26 +20,29 @@ import java.util.UUID;
 public class CategoryService {
     @Autowired
     CategoryRepository categoryRepository;
+    @Autowired
+    private ProductRepository productRepository;
 
     @Transactional
-    public ResponseCategoryDto createCategory(CreateCategoryDto createCategoryDto){
-        Category newCategory = CategoryMapper.createCategoryToCategory(createCategoryDto);
-        categoryRepository.save(newCategory);
-        return CategoryMapper.categoryToResponseCategory(newCategory);
+    public ResponseCategoryDetailsDto createCategory(CreateCategoryDto createCategoryDto) {
+        Category category = CategoryMapper.createCategoryToCategory(createCategoryDto);
+        category.activity();
+        categoryRepository.save(category);
+        return CategoryMapper.categoryToResponseCategoryDetails(category);
     }
 
-    public List<ResponseCategoryDto> findCategory() {
-        return categoryRepository.findAll().stream().map(CategoryMapper::categoryToResponseCategory).toList();
+    public List<ResponseCategoryDetailsDto> findCategory() {
+        return categoryRepository.findAll().stream().map(CategoryMapper::categoryToResponseCategoryDetails).toList();
     }
 
-    public ResponseCategoryDto findCategoryById(UUID id) {
+    public ResponseCategoryDetailsDto findCategoryById(UUID id) {
         return categoryRepository.findById(id)
-                .map(CategoryMapper::categoryToResponseCategory)
+                .map(CategoryMapper::categoryToResponseCategoryDetails)
                 .orElseThrow(() -> new CategoryNotFoundException("Category not found by id: " + id));
     }
 
     @Transactional
-    public ResponseCategoryDto updateCategory(UUID id, UpdateCategoryDto updateCategoryDto) {
+    public ResponseCategoryDetailsDto updateCategory(UUID id, UpdateCategoryDto updateCategoryDto) {
         Category categoryFound = categoryRepository
                 .findById(id).orElseThrow(() -> new CategoryNotFoundException("Category not found by id: " + id));
 
@@ -45,14 +50,42 @@ public class CategoryService {
 
         categoryRepository.save(categoryFound);
 
-        return CategoryMapper.categoryToResponseCategory(categoryFound);
+        return CategoryMapper.categoryToResponseCategoryDetails(categoryFound);
     }
 
     @Transactional
     public void deleteCategory(UUID id) {
+        if (productRepository.existsByCategory_CategoryId(id)) {
+            throw new CategoryAlreadyUsedException("This category has already been used in a product. Please use the deactivate option.");
+        }
+
         Category categoryFound = categoryRepository
                 .findById(id).orElseThrow(() -> new CategoryNotFoundException("Category not found by id: " + id));
 
         categoryRepository.delete(categoryFound);
+    }
+
+    @Transactional
+    public ResponseCategoryDetailsDto activateCategory(UUID id) {
+        Category categoryFound = categoryRepository
+                .findById(id).orElseThrow(() -> new CategoryNotFoundException("Category not found by id: " + id));
+
+        categoryFound.activity();
+
+        categoryRepository.save(categoryFound);
+
+        return CategoryMapper.categoryToResponseCategoryDetails(categoryFound);
+    }
+
+    @Transactional
+    public ResponseCategoryDetailsDto deactivateCategory(UUID id) {
+        Category categoryFound = categoryRepository
+                .findById(id).orElseThrow(() -> new CategoryNotFoundException("Category not found by id: " + id));
+
+        categoryFound.inactivity();
+
+        categoryRepository.save(categoryFound);
+
+        return CategoryMapper.categoryToResponseCategoryDetails(categoryFound);
     }
 }
