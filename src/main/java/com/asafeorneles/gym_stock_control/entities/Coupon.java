@@ -13,7 +13,9 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "tb_coupon")
+@Table(name = "tb_coupon", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"code"})
+})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -38,6 +40,9 @@ public class Coupon {
 
     @Column(name = "quantity")
     private int quantity;
+
+    @Column(name = "unlimited")
+    private boolean unlimited;
 
     @Column(name = "activity_status")
     @Enumerated(EnumType.STRING)
