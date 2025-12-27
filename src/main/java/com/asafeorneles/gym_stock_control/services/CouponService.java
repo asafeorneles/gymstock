@@ -109,12 +109,12 @@ public class CouponService {
 
     @Transactional
     public void deleteCoupon(UUID id) {
-        Coupon coupon = couponRepository.findById(id)
-                .orElseThrow(() -> new CouponNotFoundException("Coupon not found by id: " + id));
-
         if (saleRepository.existsByCoupon_CouponId(id)){
             throw new CouponUsedException("This coupon has already been used in a sale. Please use the deactivate option.");
         }
+
+        Coupon coupon = couponRepository.findById(id)
+                .orElseThrow(() -> new CouponNotFoundException("Coupon not found by id: " + id));
 
         couponRepository.delete(coupon);
     }
