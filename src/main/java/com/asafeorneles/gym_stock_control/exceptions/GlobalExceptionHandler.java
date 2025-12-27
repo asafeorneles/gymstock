@@ -128,6 +128,66 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         );
     }
 
+    @ExceptionHandler(InvalidCouponException.class)
+    public ResponseEntity<ResponseException> invalidCouponExceptionHandler(InvalidCouponException e){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                new ResponseException(
+                        HttpStatus.BAD_REQUEST.value(),
+                        "BAD_REQUEST",
+                        e.getMessage(),
+                        LocalDateTime.now()
+                )
+        );
+    }
+
+    @ExceptionHandler(CouponNotFoundException.class)
+    public ResponseEntity<ResponseException> couponNotFoundExceptionHandler(CouponNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                new ResponseException(
+                        HttpStatus.NOT_FOUND.value(),
+                        "NOT_FOUND",
+                        e.getMessage(),
+                        LocalDateTime.now()
+                )
+        );
+    }
+
+    @ExceptionHandler(CouponUsedException.class)
+    public ResponseEntity<ResponseException> couponNotUsedExceptionHandler(CouponUsedException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                new ResponseException(
+                        HttpStatus.CONFLICT.value(),
+                        "CONFLICT",
+                        e.getMessage(),
+                        LocalDateTime.now()
+                )
+        );
+    }
+
+    @ExceptionHandler(CouponAlreadyInactivityException.class)
+    public ResponseEntity<ResponseException> couponAlreadyInactivityExceptionHandler(CouponAlreadyInactivityException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                new ResponseException(
+                        409,
+                        "CONFLICT",
+                        e.getMessage(),
+                        LocalDateTime.now()
+                )
+        );
+    }
+
+    @ExceptionHandler(CouponAlreadyActiveException.class)
+    public ResponseEntity<ResponseException> couponAlreadyActivityExceptionHandler(CouponAlreadyActiveException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                new ResponseException(
+                        HttpStatus.CONFLICT.value(),
+                        "CONFLICT",
+                        e.getMessage(),
+                        LocalDateTime.now()
+                )
+        );
+    }
+
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException e, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
 

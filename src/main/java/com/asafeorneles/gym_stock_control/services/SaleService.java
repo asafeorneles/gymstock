@@ -4,12 +4,15 @@ import com.asafeorneles.gym_stock_control.dtos.SaleItem.CreateSaleItemDto;
 import com.asafeorneles.gym_stock_control.dtos.sale.CreateSaleDto;
 import com.asafeorneles.gym_stock_control.dtos.sale.PatchPaymentMethodDto;
 import com.asafeorneles.gym_stock_control.dtos.sale.ResponseSaleDto;
+import com.asafeorneles.gym_stock_control.entities.Coupon;
 import com.asafeorneles.gym_stock_control.entities.Product;
 import com.asafeorneles.gym_stock_control.entities.Sale;
 import com.asafeorneles.gym_stock_control.entities.SaleItem;
+import com.asafeorneles.gym_stock_control.exceptions.CouponNotFoundException;
 import com.asafeorneles.gym_stock_control.exceptions.ProductNotFoundException;
 import com.asafeorneles.gym_stock_control.exceptions.SaleNotFoundException;
 import com.asafeorneles.gym_stock_control.mapper.SaleMapper;
+import com.asafeorneles.gym_stock_control.repositories.CouponRepository;
 import com.asafeorneles.gym_stock_control.repositories.ProductRepository;
 import com.asafeorneles.gym_stock_control.repositories.SaleRepository;
 import jakarta.validation.Valid;
@@ -34,15 +37,32 @@ public class SaleService {
     @Autowired
     ProductInventoryService productInventoryService;
 
+    @Autowired
+    CouponRepository couponRepository;
+
+    @Autowired
+    CouponService couponService;
+
     @Transactional
     public ResponseSaleDto createSale(@Valid CreateSaleDto createSaleDto) {
         Sale sale = SaleMapper.createSaleToSale(createSaleDto);
         List<SaleItem> saleItems = newSaleItemList(createSaleDto.saleItems(), productRepository, sale, productInventoryService);
 
         sale.setSaleItems(saleItems);
-        sale.calculateTotalPrice();
 
         productInventoryService.updateQuantityAfterSale(saleItems);
+
+        sale.calculateTotalPrice();
+
+        if (createSaleDto.couponId() != null){
+            UUID couponId = createSaleDto.couponId();
+            Coupon coupon = couponRepository.findById(couponId)
+                    .orElseThrow(() -> new CouponNotFoundException("Coupon not found by id: " + couponId));
+
+            couponService.validateCouponToCreateSale(coupon);
+            sale.setCoupon(coupon);
+            couponService.applyCoupon(sale);
+        }
 
         saleRepository.save(sale);
         return SaleMapper.saleToResponseSale(sale);

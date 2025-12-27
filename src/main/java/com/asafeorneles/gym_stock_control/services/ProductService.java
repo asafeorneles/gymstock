@@ -94,12 +94,12 @@ public class ProductService {
 
     @Transactional
     public void deleteProduct(UUID id) {
-        Product productFound = productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found by id: " + id));
-
         if (saleItemRepository.existsByProduct_ProductId(id)){
             throw new ProductSoldException("This product has already been used in a sale. Please use the deactivate option.");
         }
+
+        Product productFound = productRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException("Product not found by id: " + id));
 
         productRepository.delete(productFound);
     }
