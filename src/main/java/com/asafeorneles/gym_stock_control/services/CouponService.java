@@ -13,6 +13,7 @@ import com.asafeorneles.gym_stock_control.mapper.CouponMapper;
 import com.asafeorneles.gym_stock_control.repositories.CouponRepository;
 import com.asafeorneles.gym_stock_control.repositories.SaleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -116,6 +117,24 @@ public class CouponService {
         }
 
         couponRepository.delete(coupon);
+    }
+
+    public ResponseCouponDto deactivateCoupon(UUID id) {
+        Coupon coupon = couponRepository.findById(id)
+                .orElseThrow(() -> new CouponNotFoundException("Coupon not found by id: " + id));
+
+        coupon.inactivity();
+        couponRepository.save(coupon);
+        return CouponMapper.couponToResponseCoupon(coupon);
+    }
+
+    public ResponseCouponDto activityCoupon(UUID id) {
+        Coupon coupon = couponRepository.findById(id)
+                .orElseThrow(() -> new CouponNotFoundException("Coupon not found by id: " + id));
+
+        coupon.activity();
+        couponRepository.save(coupon);
+        return CouponMapper.couponToResponseCoupon(coupon);
     }
 }
 

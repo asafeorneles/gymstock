@@ -39,4 +39,15 @@ public class CouponController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Coupon deleted successfully");
     }
 
+    @PatchMapping("/{id}/deactivate")
+    public ResponseEntity<ResponseCouponDto> deactivateCoupon(@PathVariable(value = "id") UUID id){
+        return ResponseEntity.status(HttpStatus.OK).body(couponService.deactivateCoupon(id));
+    }
+
+    @PatchMapping("/{id}/activity")
+    public ResponseEntity<ResponseCouponDto> activityCoupon(@PathVariable(value = "id") UUID id){
+        return ResponseEntity.status(HttpStatus.OK).body(couponService.activityCoupon(id));
+    }
+
+
 }
