@@ -1,6 +1,7 @@
 package com.asafeorneles.gym_stock_control.dtos.sale;
 
 import com.asafeorneles.gym_stock_control.dtos.SaleItem.ResponseSaleItemDto;
+import com.asafeorneles.gym_stock_control.dtos.coupon.CouponAppliedDto;
 import com.asafeorneles.gym_stock_control.enums.PaymentMethod;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -12,6 +13,7 @@ import java.util.UUID;
 public record ResponseSaleDto(
         UUID saleId,
         List<ResponseSaleItemDto> saleItems,
+        CouponAppliedDto couponApplied,
         BigDecimal totalPrice,
         PaymentMethod paymentMethod,
         @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
