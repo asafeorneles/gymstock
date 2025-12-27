@@ -20,7 +20,7 @@ public record CreateCouponDto(
         BigDecimal discountValue,
         @NotNull(message = "The discountType cannot be empty!")
         DiscountType discountType,
-        @NotNull(message = "The quantity cannot be empty!")
+        boolean unlimited,
         @Min(value = 1, message = "The min quantity is 1!")
         int quantity,
         @NotNull(message = "The activityStatus cannot be empty!")
