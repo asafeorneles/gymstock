@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.util.List;
+import java.util.UUID;
 
 public record CreateSaleDto(
         @NotNull(message = "The list of sale items cannot be null!")
@@ -14,7 +15,8 @@ public record CreateSaleDto(
         @Valid
         List<CreateSaleItemDto> saleItems,
         @NotNull(message = "The payment method of sale items cannot be null!")
-        PaymentMethod paymentMethod
+        PaymentMethod paymentMethod,
+        UUID couponId
 ) {
 
 }
