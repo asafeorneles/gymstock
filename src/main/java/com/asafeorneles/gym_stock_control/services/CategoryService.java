@@ -4,7 +4,7 @@ import com.asafeorneles.gym_stock_control.dtos.category.CreateCategoryDto;
 import com.asafeorneles.gym_stock_control.dtos.category.ResponseCategoryDetailsDto;
 import com.asafeorneles.gym_stock_control.dtos.category.UpdateCategoryDto;
 import com.asafeorneles.gym_stock_control.entities.Category;
-import com.asafeorneles.gym_stock_control.exceptions.CategoryAlreadyUsedException;
+import com.asafeorneles.gym_stock_control.exceptions.BusinessConflictException;
 import com.asafeorneles.gym_stock_control.exceptions.ResourceNotFoundException;
 import com.asafeorneles.gym_stock_control.mapper.CategoryMapper;
 import com.asafeorneles.gym_stock_control.repositories.CategoryRepository;
@@ -56,7 +56,7 @@ public class CategoryService {
     @Transactional
     public void deleteCategory(UUID id) {
         if (productRepository.existsByCategory_CategoryId(id)) {
-            throw new CategoryAlreadyUsedException("This category has already been used in a product. Please use the deactivate option.");
+            throw new BusinessConflictException("This category has already been used in a product. Please use the deactivate option.");
         }
 
         Category categoryFound = categoryRepository

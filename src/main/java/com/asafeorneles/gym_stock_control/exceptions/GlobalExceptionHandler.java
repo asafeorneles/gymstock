@@ -44,8 +44,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         );
     }
 
-    @ExceptionHandler(CategoryAlreadyUsedException.class)
-    public ResponseEntity<ResponseException> categoryAlreadyUsedException(CategoryAlreadyUsedException e) {
+    @ExceptionHandler(BusinessConflictException.class)
+    public ResponseEntity<ResponseException> businessConflictExceptionHandler(BusinessConflictException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
                 new ResponseException(
                         HttpStatus.CONFLICT.value(),
@@ -80,48 +80,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         );
     }
 
-    @ExceptionHandler(ProductAlreadyExistsException.class)
-    public ResponseEntity<ResponseException> productAlreadyExistsExceptionHandler(ProductAlreadyExistsException e) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                new ResponseException(
-                        HttpStatus.CONFLICT.value(),
-                        "CONFLICT",
-                        e.getMessage(),
-                        LocalDateTime.now()
-                )
-        );
-    }
-
-    @ExceptionHandler(ProductSoldException.class)
-    public ResponseEntity<ResponseException> productSoldExceptionHandler(ProductSoldException e) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                new ResponseException(
-                        HttpStatus.CONFLICT.value(),
-                        "CONFLICT",
-                        e.getMessage(),
-                        LocalDateTime.now()
-                )
-        );
-    }
-
     @ExceptionHandler(InvalidCouponException.class)
     public ResponseEntity<ResponseException> invalidCouponExceptionHandler(InvalidCouponException e){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 new ResponseException(
                         HttpStatus.BAD_REQUEST.value(),
                         "BAD_REQUEST",
-                        e.getMessage(),
-                        LocalDateTime.now()
-                )
-        );
-    }
-
-    @ExceptionHandler(CouponAlreadyUsedException.class)
-    public ResponseEntity<ResponseException> couponAlreadyUsedException(CouponAlreadyUsedException e) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                new ResponseException(
-                        HttpStatus.CONFLICT.value(),
-                        "CONFLICT",
                         e.getMessage(),
                         LocalDateTime.now()
                 )

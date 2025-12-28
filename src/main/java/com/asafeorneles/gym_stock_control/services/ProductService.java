@@ -40,10 +40,8 @@ public class ProductService {
         }
 
         if (productRepository.existsByNameAndBrand(createProductDto.name(), createProductDto.brand())) {
-            throw new ProductAlreadyExistsException("Product already exists");
+            throw new BusinessConflictException("Product already exists");
         }
-
-
 
         Product product = ProductMapper.createProductToProduct(createProductDto, category);
 
@@ -99,7 +97,7 @@ public class ProductService {
     @Transactional
     public void deleteProduct(UUID id) {
         if (saleItemRepository.existsByProduct_ProductId(id)){
-            throw new ProductSoldException("This product has already been used in a sale. Please use the deactivate option.");
+            throw new BusinessConflictException("This product has already been used in a sale. Please use the deactivate option.");
         }
 
         Product productFound = productRepository.findById(id)

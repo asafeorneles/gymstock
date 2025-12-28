@@ -6,7 +6,7 @@ import com.asafeorneles.gym_stock_control.entities.Coupon;
 import com.asafeorneles.gym_stock_control.entities.Sale;
 import com.asafeorneles.gym_stock_control.enums.ActivityStatus;
 import com.asafeorneles.gym_stock_control.enums.DiscountType;
-import com.asafeorneles.gym_stock_control.exceptions.CouponAlreadyUsedException;
+import com.asafeorneles.gym_stock_control.exceptions.BusinessConflictException;
 import com.asafeorneles.gym_stock_control.exceptions.InvalidCouponException;
 import com.asafeorneles.gym_stock_control.exceptions.ResourceNotFoundException;
 import com.asafeorneles.gym_stock_control.mapper.CouponMapper;
@@ -44,7 +44,7 @@ public class CouponService {
 
     public void validateCouponToCreate(CreateCouponDto createCouponDto) {
         if (couponRepository.existsByCode(createCouponDto.code())) {
-            throw new InvalidCouponException("This coupon already exist!"); // Or BusinessConflictExeption
+            throw new BusinessConflictException("This coupon already exist!"); // Or BusinessConflictExeption
         }
 
         if (!createCouponDto.unlimited() && createCouponDto.quantity() <= 0) {
@@ -109,7 +109,7 @@ public class CouponService {
     @Transactional
     public void deleteCoupon(UUID id) {
         if (saleRepository.existsByCoupon_CouponId(id)){
-            throw new CouponAlreadyUsedException("This coupon has already been used in a sale. Please use the deactivate option.");
+            throw new BusinessConflictException("This coupon has already been used in a sale. Please use the deactivate option.");
         }
 
         Coupon coupon = couponRepository.findById(id)
