@@ -45,7 +45,7 @@ public class CouponService {
 
     public void validateCouponToCreate(CreateCouponDto createCouponDto) {
         if (couponRepository.existsByCode(createCouponDto.code())) {
-            throw new BusinessConflictException("This coupon already exist!"); // Or BusinessConflictExeption
+            throw new BusinessConflictException("This coupon already exist!");
         }
 
         if (!createCouponDto.unlimited() && createCouponDto.quantity() <= 0) {
