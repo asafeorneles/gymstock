@@ -11,7 +11,6 @@ import com.asafeorneles.gym_stock_control.exceptions.ResourceNotFoundException;
 import com.asafeorneles.gym_stock_control.repositories.CategoryRepository;
 import com.asafeorneles.gym_stock_control.repositories.ProductRepository;
 import com.asafeorneles.gym_stock_control.repositories.SaleItemRepository;
-import com.asafeorneles.gym_stock_control.repositories.SaleRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -435,7 +434,7 @@ class ProductServiceTest {
         void shouldDeactivateAProductWithSuccessfully(){
             // ARRANGE
             when(productRepository.findById(product.getProductId())).thenReturn(Optional.of(product));
-            when(productRepository.save(product)).thenReturn(product);
+            when(productRepository.save(any(Product.class))).thenReturn(product);
 
             // ACT
             ResponseProductDetailDto responseProductDetailDto = productService.deactivateProduct(product.getProductId(), deactivateProductDto);
@@ -466,7 +465,7 @@ class ProductServiceTest {
             // ARRANGE
             product.setActivityStatus(ActivityStatus.INACTIVITY);
             when(productRepository.findById(product.getProductId())).thenReturn(Optional.of(product));
-            when(productRepository.save(product)).thenReturn(product);
+            when(productRepository.save(any(Product.class))).thenReturn(product);
 
             // ACT
             ResponseProductDetailDto responseProductDetailDto = productService.activateProduct(product.getProductId());

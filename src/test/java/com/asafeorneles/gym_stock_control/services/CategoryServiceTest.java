@@ -4,7 +4,12 @@ import com.asafeorneles.gym_stock_control.dtos.category.CreateCategoryDto;
 import com.asafeorneles.gym_stock_control.dtos.category.ResponseCategoryDetailsDto;
 import com.asafeorneles.gym_stock_control.dtos.category.UpdateCategoryDto;
 import com.asafeorneles.gym_stock_control.entities.Category;
+import com.asafeorneles.gym_stock_control.enums.ActivityStatus;
+import com.asafeorneles.gym_stock_control.exceptions.ActivityStatusException;
+import com.asafeorneles.gym_stock_control.exceptions.BusinessConflictException;
+import com.asafeorneles.gym_stock_control.exceptions.ResourceNotFoundException;
 import com.asafeorneles.gym_stock_control.repositories.CategoryRepository;
+import com.asafeorneles.gym_stock_control.repositories.ProductRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -14,6 +19,7 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +33,9 @@ class CategoryServiceTest {
 
     @Mock
     CategoryRepository categoryRepository;
+
+    @Mock
+    ProductRepository productRepository;
 
     @InjectMocks
     CategoryService categoryService;
@@ -48,6 +57,7 @@ class CategoryServiceTest {
                 .name("Suplementos")
                 .description("Alimento em pó para maior eficiência")
                 .build();
+        category.activity();
 
         createCategoryDto = new CreateCategoryDto(
                 "Suplementos",
@@ -102,27 +112,30 @@ class CategoryServiceTest {
         @Test
         void shouldFindCategoriesSuccessfully(){
             // ARRANGE
-            when(categoryRepository.findAll()).thenReturn(List.of(category));
+            when(categoryRepository.findAll(any(Specification.class))).thenReturn(List.of(category));
 
             // ACT
-            List<ResponseCategoryDetailsDto> responseCategoriesFound = categoryService.findCategory();
+            List<ResponseCategoryDetailsDto> responseCategoriesFound = categoryService.findCategory(Specification.unrestricted());
 
             // ASSERT
             assertFalse(responseCategoriesFound.isEmpty());
             assertEquals(1, responseCategoriesFound.size());
             assertEquals(category.getName(), responseCategoriesFound.get(0).name());
             assertEquals(category.getDescription(), responseCategoriesFound.get(0).description());
-            verify(categoryRepository, times(1)).findAll();
+            verify(categoryRepository, times(1)).findAll(any(Specification.class));
         }
 
         @Test
-        void shouldThrowExceptionWhenCategoriesIsNotFound(){
+        void shouldEmptyListWhenCategoriesIsNotFound(){
             // ARRANGE
-            when(categoryRepository.findAll()).thenReturn(List.of());
+            when(categoryRepository.findAll(any(Specification.class))).thenReturn(List.of());
+
+            // ACT
+            List<ResponseCategoryDetailsDto> categoryFound = categoryService.findCategory(Specification.unrestricted());
 
             // ASSERT
-            assertThrows(CategoryNotFoundException.class, ()-> categoryService.findCategory());
-            verify(categoryRepository, times(1)).findAll();
+            assertTrue(categoryFound.isEmpty());
+            verify(categoryRepository, times(1)).findAll(any(Specification.class));
 
         }
     }
@@ -152,7 +165,7 @@ class CategoryServiceTest {
             when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.empty());
 
             // ASSERT
-            assertThrows(CategoryNotFoundException.class, ()-> categoryService.findCategoryById(category.getCategoryId()));
+            assertThrows(ResourceNotFoundException.class, ()-> categoryService.findCategoryById(category.getCategoryId()));
             verify(categoryRepository, times(1)).findById(category.getCategoryId());
 
         }
@@ -189,7 +202,7 @@ class CategoryServiceTest {
             when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.empty());
 
             // ASSERT
-            assertThrows(CategoryNotFoundException.class, ()-> categoryService.updateCategory(category.getCategoryId(), updateCategoryDto));
+            assertThrows(ResourceNotFoundException.class, ()-> categoryService.updateCategory(category.getCategoryId(), updateCategoryDto));
             verify(categoryRepository, times(1)).findById(category.getCategoryId());
         }
 
@@ -211,6 +224,7 @@ class CategoryServiceTest {
         @Test
         void shouldDeleteACategorySuccessfully(){
             // ARRANGE
+            when(productRepository.existsByCategory_CategoryId(category.getCategoryId())).thenReturn(false);
             when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.of(category));
             doNothing().when(categoryRepository).delete(category);
 
@@ -231,8 +245,76 @@ class CategoryServiceTest {
             when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.empty());
 
             // ASSERT
-            assertThrows(CategoryNotFoundException.class, ()-> categoryService.deleteCategory(category.getCategoryId()));
+            assertThrows(ResourceNotFoundException.class, ()-> categoryService.deleteCategory(category.getCategoryId()));
             verify(categoryRepository, times(1)).findById(category.getCategoryId());
+        }
+
+        @Test
+        void shouldThrowExceptionWhenCategoryHasBeenUsedInAProduct(){
+            // ARRANGE
+            when(productRepository.existsByCategory_CategoryId(category.getCategoryId())).thenReturn(true);
+
+            // ASSERT
+            assertThrows(BusinessConflictException.class, ()-> categoryService.deleteCategory(category.getCategoryId()));
+            verify(categoryRepository, never()).findById(category.getCategoryId());
+            verify(categoryRepository, never()).delete(category);
+        }
+
+        @Nested
+        class activateCategory{
+            @Test
+            void shouldActivateACategoryWithSuccessfully(){
+                // ARRANGE
+                category.setActivityStatus(ActivityStatus.INACTIVITY);
+                when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.of(category));
+                when(categoryRepository.save(any(Category.class))).thenReturn(category);
+
+                // ACT
+                ResponseCategoryDetailsDto responseCategoryDetailsDto = categoryService.activateCategory(category.getCategoryId());
+
+                // ASSERT
+                assertNotNull(responseCategoryDetailsDto);
+                assertTrue(category.isActivity());
+            }
+
+            @Test
+            void shouldThrowExceptionWhenProductIsAlreadyActivity() {
+                // ARRANGE
+                when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.of(category));
+
+                // ASSERTS
+                assertThrows(ActivityStatusException.class, () -> categoryService.activateCategory(category.getCategoryId()));
+                verify(categoryRepository, times(1)).findById(category.getCategoryId());
+                verify(categoryRepository, never()).save(any(Category.class));
+            }
+        }
+
+        @Nested
+        class deactivateCategory{
+            @Test
+            void shouldInactivateACategoryWithSuccessfully(){
+                // ARRANGE
+                when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.of(category));
+                when(categoryRepository.save(any(Category.class))).thenReturn(category);
+
+                // ACT
+                ResponseCategoryDetailsDto responseCategoryDetailsDto = categoryService.deactivateCategory(category.getCategoryId());
+
+                // ASSERT
+                assertNotNull(responseCategoryDetailsDto);
+                assertFalse(category.isActivity());
+            }
+
+            @Test
+            void shouldThrowExceptionWhenProductIsAlreadyInactivity() {
+                // ARRANGE
+                when(categoryRepository.findById(category.getCategoryId())).thenReturn(Optional.of(category));
+
+                // ASSERTS
+                assertThrows(ActivityStatusException.class, () -> categoryService.activateCategory(category.getCategoryId()));
+                verify(categoryRepository, times(1)).findById(category.getCategoryId());
+                verify(categoryRepository, never()).save(any(Category.class));
+            }
         }
     }
 }
