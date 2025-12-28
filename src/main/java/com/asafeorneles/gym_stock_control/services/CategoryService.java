@@ -10,6 +10,7 @@ import com.asafeorneles.gym_stock_control.mapper.CategoryMapper;
 import com.asafeorneles.gym_stock_control.repositories.CategoryRepository;
 import com.asafeorneles.gym_stock_control.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,8 +32,8 @@ public class CategoryService {
         return CategoryMapper.categoryToResponseCategoryDetails(category);
     }
 
-    public List<ResponseCategoryDetailsDto> findCategory() {
-        return categoryRepository.findAll().stream().map(CategoryMapper::categoryToResponseCategoryDetails).toList();
+    public List<ResponseCategoryDetailsDto> findCategory(Specification<Category> specification) {
+        return categoryRepository.findAll(specification).stream().map(CategoryMapper::categoryToResponseCategoryDetails).toList();
     }
 
     public ResponseCategoryDetailsDto findCategoryById(UUID id) {

@@ -3,12 +3,14 @@ package com.asafeorneles.gym_stock_control.controllers;
 import com.asafeorneles.gym_stock_control.dtos.category.CreateCategoryDto;
 import com.asafeorneles.gym_stock_control.dtos.category.ResponseCategoryDetailsDto;
 import com.asafeorneles.gym_stock_control.dtos.category.UpdateCategoryDto;
+import com.asafeorneles.gym_stock_control.queryFilters.CategoryQueryFilters;
 import com.asafeorneles.gym_stock_control.services.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -44,8 +46,8 @@ public class CategoryController {
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @GetMapping
-    public ResponseEntity<List<ResponseCategoryDetailsDto>> findCategories() {
-        return ResponseEntity.status(HttpStatus.OK).body(categoryService.findCategory());
+    public ResponseEntity<List<ResponseCategoryDetailsDto>> findCategories(@ParameterObject CategoryQueryFilters filters) {
+        return ResponseEntity.status(HttpStatus.OK).body(categoryService.findCategory(filters.toSpecification()));
     }
 
     @Operation(summary = "Get a category by id")
