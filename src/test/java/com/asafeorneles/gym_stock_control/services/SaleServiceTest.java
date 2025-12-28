@@ -9,8 +9,7 @@ import com.asafeorneles.gym_stock_control.entities.Product;
 import com.asafeorneles.gym_stock_control.entities.Sale;
 import com.asafeorneles.gym_stock_control.entities.SaleItem;
 import com.asafeorneles.gym_stock_control.enums.PaymentMethod;
-import com.asafeorneles.gym_stock_control.exceptions.ProductNotFoundException;
-import com.asafeorneles.gym_stock_control.exceptions.SaleNotFoundException;
+import com.asafeorneles.gym_stock_control.exceptions.ResourceNotFoundException;
 import com.asafeorneles.gym_stock_control.repositories.ProductRepository;
 import com.asafeorneles.gym_stock_control.repositories.SaleRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -129,7 +128,7 @@ class SaleServiceTest {
                     .thenReturn(Optional.empty());
 
             // ASSERT
-            assertThrows(ProductNotFoundException.class,() -> saleService.createSale(createSaleDto));
+            assertThrows(ResourceNotFoundException.class,() -> saleService.createSale(createSaleDto));
 
             verify(productInventoryService, never()).updateQuantityAfterSale(any());
 

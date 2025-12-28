@@ -5,7 +5,7 @@ import com.asafeorneles.gym_stock_control.dtos.category.ResponseCategoryDetailsD
 import com.asafeorneles.gym_stock_control.dtos.category.UpdateCategoryDto;
 import com.asafeorneles.gym_stock_control.entities.Category;
 import com.asafeorneles.gym_stock_control.exceptions.CategoryAlreadyUsedException;
-import com.asafeorneles.gym_stock_control.exceptions.CategoryNotFoundException;
+import com.asafeorneles.gym_stock_control.exceptions.ResourceNotFoundException;
 import com.asafeorneles.gym_stock_control.mapper.CategoryMapper;
 import com.asafeorneles.gym_stock_control.repositories.CategoryRepository;
 import com.asafeorneles.gym_stock_control.repositories.ProductRepository;
@@ -38,13 +38,13 @@ public class CategoryService {
     public ResponseCategoryDetailsDto findCategoryById(UUID id) {
         return categoryRepository.findById(id)
                 .map(CategoryMapper::categoryToResponseCategoryDetails)
-                .orElseThrow(() -> new CategoryNotFoundException("Category not found by id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found by id: " + id));
     }
 
     @Transactional
     public ResponseCategoryDetailsDto updateCategory(UUID id, UpdateCategoryDto updateCategoryDto) {
         Category categoryFound = categoryRepository
-                .findById(id).orElseThrow(() -> new CategoryNotFoundException("Category not found by id: " + id));
+                .findById(id).orElseThrow(() -> new ResourceNotFoundException("Category not found by id: " + id));
 
         CategoryMapper.updateCategoryToCategory(categoryFound, updateCategoryDto);
 
@@ -60,7 +60,7 @@ public class CategoryService {
         }
 
         Category categoryFound = categoryRepository
-                .findById(id).orElseThrow(() -> new CategoryNotFoundException("Category not found by id: " + id));
+                .findById(id).orElseThrow(() -> new ResourceNotFoundException("Category not found by id: " + id));
 
         categoryRepository.delete(categoryFound);
     }
@@ -68,7 +68,7 @@ public class CategoryService {
     @Transactional
     public ResponseCategoryDetailsDto activateCategory(UUID id) {
         Category categoryFound = categoryRepository
-                .findById(id).orElseThrow(() -> new CategoryNotFoundException("Category not found by id: " + id));
+                .findById(id).orElseThrow(() -> new ResourceNotFoundException("Category not found by id: " + id));
 
         categoryFound.activity();
 
@@ -80,7 +80,7 @@ public class CategoryService {
     @Transactional
     public ResponseCategoryDetailsDto deactivateCategory(UUID id) {
         Category categoryFound = categoryRepository
-                .findById(id).orElseThrow(() -> new CategoryNotFoundException("Category not found by id: " + id));
+                .findById(id).orElseThrow(() -> new ResourceNotFoundException("Category not found by id: " + id));
 
         categoryFound.inactivity();
 

@@ -8,9 +8,7 @@ import com.asafeorneles.gym_stock_control.entities.Coupon;
 import com.asafeorneles.gym_stock_control.entities.Product;
 import com.asafeorneles.gym_stock_control.entities.Sale;
 import com.asafeorneles.gym_stock_control.entities.SaleItem;
-import com.asafeorneles.gym_stock_control.exceptions.CouponNotFoundException;
-import com.asafeorneles.gym_stock_control.exceptions.ProductNotFoundException;
-import com.asafeorneles.gym_stock_control.exceptions.SaleNotFoundException;
+import com.asafeorneles.gym_stock_control.exceptions.ResourceNotFoundException;
 import com.asafeorneles.gym_stock_control.mapper.SaleMapper;
 import com.asafeorneles.gym_stock_control.repositories.CouponRepository;
 import com.asafeorneles.gym_stock_control.repositories.ProductRepository;
@@ -57,7 +55,7 @@ public class SaleService {
         if (createSaleDto.couponId() != null){
             UUID couponId = createSaleDto.couponId();
             Coupon coupon = couponRepository.findById(couponId)
-                    .orElseThrow(() -> new CouponNotFoundException("Coupon not found by id: " + couponId));
+                    .orElseThrow(() -> new ResourceNotFoundException("Coupon not found by id: " + couponId));
 
             couponService.validateCouponToCreateSale(coupon);
             sale.setCoupon(coupon);
@@ -75,7 +73,7 @@ public class SaleService {
             UUID productId = createSaleItem.productId();
             Product product = productRepository.findById(productId)
                     .filter(Product::isActivity)
-                    .orElseThrow(() -> new ProductNotFoundException("Product not found by id: " + productId));
+                    .orElseThrow(() -> new ResourceNotFoundException("Product not found by id: " + productId));
 
             productInventoryService.validateQuantity(product, createSaleItem.quantity());
 
@@ -102,13 +100,13 @@ public class SaleService {
     public ResponseSaleDto findSaleById(UUID id) {
         return saleRepository.findById(id)
                 .map(SaleMapper::saleToResponseSale)
-                .orElseThrow(() -> new SaleNotFoundException("No sales registered with id {" + id + "}"));
+                .orElseThrow(() -> new ResourceNotFoundException("No sales registered with id {" + id + "}"));
     }
 
     @Transactional
     public void deleteSale(UUID id) {
         Sale saleFound = saleRepository.findById(id)
-                .orElseThrow(() -> new SaleNotFoundException("No sales registered with id {" + id + "}"));
+                .orElseThrow(() -> new ResourceNotFoundException("No sales registered with id {" + id + "}"));
 
         saleRepository.delete(saleFound);
     }
@@ -116,7 +114,7 @@ public class SaleService {
     @Transactional
     public ResponseSaleDto updatePaymentMethod(UUID id, PatchPaymentMethodDto patchPaymentMethod) {
         Sale saleFound = saleRepository.findById(id)
-                .orElseThrow(() -> new SaleNotFoundException("No sales registered with id {" + id + "}"));
+                .orElseThrow(() -> new ResourceNotFoundException("No sales registered with id {" + id + "}"));
 
         saleFound.setPaymentMethod(patchPaymentMethod.paymentMethod());
         saleRepository.save(saleFound);

@@ -33,7 +33,7 @@ public class ProductService {
     public ResponseProductDetailDto createProduct(CreateProductDto createProductDto) {
         UUID categoryId = createProductDto.categoryId();
         Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new CategoryNotFoundException("The category {" + categoryId + "} does not exist. Please insert a valid category."));
+                .orElseThrow(() -> new ResourceNotFoundException("The category {" + categoryId + "} does not exist. Please insert a valid category."));
 
         if (category.getActivityStatus() == ActivityStatus.INACTIVITY){
             throw new CategoryInactivityException("This category is inactivity!");
@@ -70,7 +70,7 @@ public class ProductService {
         return productRepository.findById(id)
                 .filter(Product::isActivity)
                 .map(ProductMapper::productToResponseProduct)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found by id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found by id: " + id));
     }
 
     public List<ResponseProductDetailDto> findProductsWithLowStock() {
@@ -83,11 +83,11 @@ public class ProductService {
     @Transactional
     public ResponseProductDetailDto updateProduct(UUID id, UpdateProductDto updateProductDto) {
         Product productFound = productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found by id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found by id: " + id));
 
         UUID updateCategoryId = updateProductDto.categoryId();
         Category category = categoryRepository.findById(updateCategoryId)
-                .orElseThrow(() -> new CategoryNotFoundException("The category {" + updateCategoryId + "} does not exist. Please insert a valid category to update the product."));
+                .orElseThrow(() -> new ResourceNotFoundException("The category {" + updateCategoryId + "} does not exist. Please insert a valid category to update the product."));
 
         ProductMapper.updateProductToProduct(updateProductDto, productFound, category);
 
@@ -103,7 +103,7 @@ public class ProductService {
         }
 
         Product productFound = productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found by id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found by id: " + id));
 
         productRepository.delete(productFound);
     }
@@ -112,7 +112,7 @@ public class ProductService {
     @Transactional
     public ResponseProductDetailDto deactivateProduct(UUID id, DeactivateProductDto deactivateProductDto) {
         Product productFound = productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found by id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found by id: " + id));
 
         productFound.inactivity(deactivateProductDto.reason());
 
@@ -124,7 +124,7 @@ public class ProductService {
     @Transactional
     public ResponseProductDetailDto activateProduct(UUID id) {
         Product productFound = productRepository.findById(id)
-                .orElseThrow(() -> new ProductNotFoundException("Product not found by id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found by id: " + id));
 
         productFound.activity();
 

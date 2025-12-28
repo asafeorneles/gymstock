@@ -6,9 +6,9 @@ import com.asafeorneles.gym_stock_control.entities.Coupon;
 import com.asafeorneles.gym_stock_control.entities.Sale;
 import com.asafeorneles.gym_stock_control.enums.ActivityStatus;
 import com.asafeorneles.gym_stock_control.enums.DiscountType;
-import com.asafeorneles.gym_stock_control.exceptions.CouponNotFoundException;
 import com.asafeorneles.gym_stock_control.exceptions.CouponAlreadyUsedException;
 import com.asafeorneles.gym_stock_control.exceptions.InvalidCouponException;
+import com.asafeorneles.gym_stock_control.exceptions.ResourceNotFoundException;
 import com.asafeorneles.gym_stock_control.mapper.CouponMapper;
 import com.asafeorneles.gym_stock_control.repositories.CouponRepository;
 import com.asafeorneles.gym_stock_control.repositories.SaleRepository;
@@ -102,7 +102,7 @@ public class CouponService {
     public ResponseCouponDto getCouponById(UUID id) {
         return couponRepository.findById(id)
                 .map(CouponMapper::couponToResponseCoupon)
-                .orElseThrow(() -> new CouponNotFoundException("Coupon not found by id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Coupon not found by id: " + id));
 
     }
 
@@ -113,14 +113,14 @@ public class CouponService {
         }
 
         Coupon coupon = couponRepository.findById(id)
-                .orElseThrow(() -> new CouponNotFoundException("Coupon not found by id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Coupon not found by id: " + id));
 
         couponRepository.delete(coupon);
     }
 
     public ResponseCouponDto deactivateCoupon(UUID id) {
         Coupon coupon = couponRepository.findById(id)
-                .orElseThrow(() -> new CouponNotFoundException("Coupon not found by id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Coupon not found by id: " + id));
 
         coupon.inactivity();
         couponRepository.save(coupon);
@@ -129,7 +129,7 @@ public class CouponService {
 
     public ResponseCouponDto activityCoupon(UUID id) {
         Coupon coupon = couponRepository.findById(id)
-                .orElseThrow(() -> new CouponNotFoundException("Coupon not found by id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Coupon not found by id: " + id));
 
         coupon.activity();
         couponRepository.save(coupon);

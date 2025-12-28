@@ -8,7 +8,7 @@ import com.asafeorneles.gym_stock_control.entities.ProductInventory;
 import com.asafeorneles.gym_stock_control.entities.SaleItem;
 import com.asafeorneles.gym_stock_control.enums.InventoryStatus;
 import com.asafeorneles.gym_stock_control.exceptions.InsufficientProductQuantityException;
-import com.asafeorneles.gym_stock_control.exceptions.ProductInventoryNotFoundException;
+import com.asafeorneles.gym_stock_control.exceptions.ResourceNotFoundException;
 import com.asafeorneles.gym_stock_control.mapper.ProductInventoryMapper;
 import com.asafeorneles.gym_stock_control.repositories.ProductInventoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,13 +34,13 @@ public class ProductInventoryService {
     public ResponseProductInventoryDetailDto findProductInventoryById(UUID id) {
         return productInventoryRepository.findById(id)
                 .map(ProductInventoryMapper::productInventoryToResponseProductInventoryDetail)
-                .orElseThrow(() -> new ProductInventoryNotFoundException("Product Inventory not found by this id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Product Inventory not found by this id: " + id));
     }
 
     @Transactional
     public ResponseProductInventoryDetailDto updateQuantity(UUID id, PatchProductInventoryQuantityDto patchProductInventoryQuantity) {
         ProductInventory productInventoryFound = productInventoryRepository.findById(id)
-                .orElseThrow(() -> new ProductInventoryNotFoundException("Product Inventory not found by this id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Product Inventory not found by this id: " + id));
 
         ProductInventoryMapper.patchProductInventoryQuantity(productInventoryFound, patchProductInventoryQuantity);
 
@@ -54,7 +54,7 @@ public class ProductInventoryService {
     @Transactional
     public ResponseProductInventoryDetailDto updateLowStockThreshold(UUID id, PatchProductInventoryLowStockThresholdDto patchProductInventoryLowStockThreshold) {
         ProductInventory productInventoryFound = productInventoryRepository.findById(id)
-                .orElseThrow(() -> new ProductInventoryNotFoundException("Product Inventory not found by this id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Product Inventory not found by this id: " + id));
 
         ProductInventoryMapper.patchProductInventoryLowStockThreshold(productInventoryFound, patchProductInventoryLowStockThreshold);
 

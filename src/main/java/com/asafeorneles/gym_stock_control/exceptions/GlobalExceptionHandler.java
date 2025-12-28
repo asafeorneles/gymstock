@@ -20,20 +20,8 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(ProductNotFoundException.class)
-    public ResponseEntity<ResponseException> productNotFoundExceptionHandler(ProductNotFoundException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                new ResponseException(
-                        HttpStatus.NOT_FOUND.value(),
-                        "NOT_FOUND",
-                        e.getMessage(),
-                        LocalDateTime.now()
-                )
-        );
-    }
-
-    @ExceptionHandler(CategoryNotFoundException.class)
-    public ResponseEntity<ResponseException> categoryNotFoundExceptionHandler(CategoryNotFoundException e) {
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ResponseException> productNotFoundExceptionHandler(ResourceNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 new ResponseException(
                         HttpStatus.NOT_FOUND.value(),
@@ -62,30 +50,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 new ResponseException(
                         HttpStatus.CONFLICT.value(),
                         "CONFLICT",
-                        e.getMessage(),
-                        LocalDateTime.now()
-                )
-        );
-    }
-
-    @ExceptionHandler(SaleNotFoundException.class)
-    public ResponseEntity<ResponseException> saleNotFoundExceptionHandler(SaleNotFoundException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                new ResponseException(
-                        HttpStatus.NOT_FOUND.value(),
-                        "NOT_FOUND",
-                        e.getMessage(),
-                        LocalDateTime.now()
-                )
-        );
-    }
-
-    @ExceptionHandler(ProductInventoryNotFoundException.class)
-    public ResponseEntity<ResponseException> productInventoryNotFoundExceptionHandler(ProductInventoryNotFoundException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                new ResponseException(
-                        HttpStatus.NOT_FOUND.value(),
-                        "NOT_FOUND",
                         e.getMessage(),
                         LocalDateTime.now()
                 )
@@ -158,18 +122,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 new ResponseException(
                         HttpStatus.BAD_REQUEST.value(),
                         "BAD_REQUEST",
-                        e.getMessage(),
-                        LocalDateTime.now()
-                )
-        );
-    }
-
-    @ExceptionHandler(CouponNotFoundException.class)
-    public ResponseEntity<ResponseException> couponNotFoundExceptionHandler(CouponNotFoundException e) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                new ResponseException(
-                        HttpStatus.NOT_FOUND.value(),
-                        "NOT_FOUND",
                         e.getMessage(),
                         LocalDateTime.now()
                 )
