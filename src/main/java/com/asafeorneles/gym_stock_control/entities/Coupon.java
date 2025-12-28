@@ -2,8 +2,7 @@ package com.asafeorneles.gym_stock_control.entities;
 
 import com.asafeorneles.gym_stock_control.enums.ActivityStatus;
 import com.asafeorneles.gym_stock_control.enums.DiscountType;
-import com.asafeorneles.gym_stock_control.exceptions.CouponAlreadyActiveException;
-import com.asafeorneles.gym_stock_control.exceptions.ProductAlreadyInactivityException;
+import com.asafeorneles.gym_stock_control.exceptions.StatusActivityException;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -71,7 +70,7 @@ public class Coupon {
 
     public void inactivity(){
         if (this.activityStatus == ActivityStatus.INACTIVITY){
-            throw new ProductAlreadyInactivityException("Coupon is already inactive!");
+            throw new StatusActivityException("Coupon is already inactive!");
         }
 
         this.activityStatus = ActivityStatus.INACTIVITY;
@@ -79,7 +78,7 @@ public class Coupon {
 
     public void activity(){
         if (this.activityStatus == ActivityStatus.ACTIVE){
-            throw new CouponAlreadyActiveException("Coupon is already active!");
+            throw new StatusActivityException("Coupon is already active!");
         }
         this.activityStatus = ActivityStatus.ACTIVE;
     }

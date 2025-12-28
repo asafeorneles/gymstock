@@ -21,11 +21,23 @@ import java.util.Map;
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ResponseException> productNotFoundExceptionHandler(ResourceNotFoundException e) {
+    public ResponseEntity<ResponseException> resourceNotFoundExceptionHandler(ResourceNotFoundException e) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 new ResponseException(
                         HttpStatus.NOT_FOUND.value(),
                         "NOT_FOUND",
+                        e.getMessage(),
+                        LocalDateTime.now()
+                )
+        );
+    }
+
+    @ExceptionHandler(StatusActivityException.class)
+    public ResponseEntity<ResponseException> statusActivityExceptionHandler(StatusActivityException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                new ResponseException(
+                        HttpStatus.CONFLICT.value(),
+                        "CONFLICT",
                         e.getMessage(),
                         LocalDateTime.now()
                 )
@@ -80,30 +92,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         );
     }
 
-    @ExceptionHandler(ProductAlreadyInactivityException.class)
-    public ResponseEntity<ResponseException> productAlreadyInactivityExceptionHandler(ProductAlreadyInactivityException e) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                new ResponseException(
-                        409,
-                        "CONFLICT",
-                        e.getMessage(),
-                        LocalDateTime.now()
-                )
-        );
-    }
-
-    @ExceptionHandler(ProductAlreadyActiveException.class)
-    public ResponseEntity<ResponseException> productAlreadyInactivityExceptionHandler(ProductAlreadyActiveException e) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                new ResponseException(
-                        HttpStatus.CONFLICT.value(),
-                        "CONFLICT",
-                        e.getMessage(),
-                        LocalDateTime.now()
-                )
-        );
-    }
-
     @ExceptionHandler(ProductSoldException.class)
     public ResponseEntity<ResponseException> productSoldExceptionHandler(ProductSoldException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
@@ -130,30 +118,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(CouponAlreadyUsedException.class)
     public ResponseEntity<ResponseException> couponAlreadyUsedException(CouponAlreadyUsedException e) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                new ResponseException(
-                        HttpStatus.CONFLICT.value(),
-                        "CONFLICT",
-                        e.getMessage(),
-                        LocalDateTime.now()
-                )
-        );
-    }
-
-    @ExceptionHandler(CouponAlreadyInactivityException.class)
-    public ResponseEntity<ResponseException> couponAlreadyInactivityExceptionHandler(CouponAlreadyInactivityException e) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(
-                new ResponseException(
-                        409,
-                        "CONFLICT",
-                        e.getMessage(),
-                        LocalDateTime.now()
-                )
-        );
-    }
-
-    @ExceptionHandler(CouponAlreadyActiveException.class)
-    public ResponseEntity<ResponseException> couponAlreadyActivityExceptionHandler(CouponAlreadyActiveException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(
                 new ResponseException(
                         HttpStatus.CONFLICT.value(),
