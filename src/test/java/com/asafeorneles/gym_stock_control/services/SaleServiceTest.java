@@ -4,12 +4,13 @@ import com.asafeorneles.gym_stock_control.dtos.SaleItem.CreateSaleItemDto;
 import com.asafeorneles.gym_stock_control.dtos.sale.CreateSaleDto;
 import com.asafeorneles.gym_stock_control.dtos.sale.PatchPaymentMethodDto;
 import com.asafeorneles.gym_stock_control.dtos.sale.ResponseSaleDto;
-import com.asafeorneles.gym_stock_control.entities.Category;
-import com.asafeorneles.gym_stock_control.entities.Product;
-import com.asafeorneles.gym_stock_control.entities.Sale;
-import com.asafeorneles.gym_stock_control.entities.SaleItem;
+import com.asafeorneles.gym_stock_control.entities.*;
+import com.asafeorneles.gym_stock_control.enums.ActivityStatus;
+import com.asafeorneles.gym_stock_control.enums.DiscountType;
 import com.asafeorneles.gym_stock_control.enums.PaymentMethod;
+import com.asafeorneles.gym_stock_control.exceptions.ActivityStatusException;
 import com.asafeorneles.gym_stock_control.exceptions.ResourceNotFoundException;
+import com.asafeorneles.gym_stock_control.repositories.CouponRepository;
 import com.asafeorneles.gym_stock_control.repositories.ProductRepository;
 import com.asafeorneles.gym_stock_control.repositories.SaleRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,13 +42,21 @@ class SaleServiceTest {
     ProductRepository productRepository;
 
     @Mock
+    CouponRepository couponRepository;
+
+    @Mock
+    CouponService couponService;
+
+    @Mock
     ProductInventoryService productInventoryService;
 
     @InjectMocks
     SaleService saleService;
 
+    Product product;
     private SaleItem saleItem;
     private Sale sale;
+    private Coupon coupon;
     private CreateSaleDto createSaleDto;
     private CreateSaleItemDto createSaleItemDto;
     private PatchPaymentMethodDto patchPaymentMethodDto;
@@ -62,7 +71,7 @@ class SaleServiceTest {
                 .description("Alimento em pó para maior eficiência")
                 .build();
 
-        Product product = Product.builder()
+        product = Product.builder()
                 .productId(UUID.randomUUID())
                 .name("Hipercalórico")
                 .brand("Growth")
@@ -70,6 +79,8 @@ class SaleServiceTest {
                 .costPrice(BigDecimal.valueOf(69.99))
                 .category(category)
                 .build();
+        product.activity();
+
         saleItem = SaleItem.builder().saleItemId(UUID.randomUUID())
                 .product(product)
                 .quantity(5)
@@ -78,16 +89,30 @@ class SaleServiceTest {
                 .totalPrice(product.getPrice().multiply(BigDecimal.valueOf(5)))
                 .build();
 
-        sale = Sale.builder().saleId(UUID.randomUUID())
+        coupon = Coupon.builder()
+                .couponId(UUID.randomUUID())
+                .code("TESTE10")
+                .description("teste")
+                .activityStatus(ActivityStatus.ACTIVE)
+                .discountType(DiscountType.PERCENTAGE)
+                .discountValue(BigDecimal.valueOf(10))
+                .unlimited(false)
+                .quantity(5)
+                .build();
+
+        sale = Sale.builder()
+                .saleId(UUID.randomUUID())
                 .saleItems(List.of(saleItem))
-                .paymentMethod(PaymentMethod.PIX).build();
+                .paymentMethod(PaymentMethod.PIX)
+                .coupon(coupon)
+                .build();
 
         saleItem.setSale(sale);
 
         sale.calculateTotalPrice();
 
         createSaleItemDto = new CreateSaleItemDto(product.getProductId(), 5);
-        createSaleDto = new CreateSaleDto(List.of(createSaleItemDto), PaymentMethod.PIX);
+        createSaleDto = new CreateSaleDto(List.of(createSaleItemDto), PaymentMethod.PIX, coupon.getCouponId());
         patchPaymentMethodDto = new PatchPaymentMethodDto(PaymentMethod.DEBIT_CARD);
     }
 
@@ -96,11 +121,9 @@ class SaleServiceTest {
         @Test
         void shouldCreateSaleSuccessfully(){
             // ARRANGE
-            when(productRepository.findById(any(UUID.class)))
-                    .thenReturn(Optional.of(saleItem.getProduct()));
-
-            when(saleRepository.save(any(Sale.class)))
-                    .thenReturn(sale);
+            when(productRepository.findById(any(UUID.class))).thenReturn(Optional.of(saleItem.getProduct()));
+            when(couponRepository.findById(coupon.getCouponId())).thenReturn(Optional.of(coupon));
+            when(saleRepository.save(any(Sale.class))).thenReturn(sale);
 
             // ACT
             ResponseSaleDto responseSaleDto = saleService.createSale(createSaleDto);
@@ -150,6 +173,16 @@ class SaleServiceTest {
 
             verify(saleRepository, never()).save(any());
         }
+
+        @Test
+        void shouldThrowAExceptionWhenProductIsNotActivity() {
+            // ARRANGE
+            product.inactivity("test");
+            when(productRepository.findById(product.getProductId())).thenReturn(Optional.of(product));
+
+            // ASSERTS
+            assertThrows(ActivityStatusException.class, () -> saleService.createSale(createSaleDto));
+        }
     }
 
     @Nested
@@ -171,12 +204,15 @@ class SaleServiceTest {
         }
 
         @Test
-        void shouldThrowExceptionWhenSalesIsNotFound(){
+        void shouldReturnEmptyListWhenSalesIsNotFound(){
             // ARRANGE
             when(saleRepository.findAll(any(Specification.class))).thenReturn(List.of());
 
+            // ACT
+            List<ResponseSaleDto> salesFound = saleService.findSales(Specification.unrestricted());
+
             // ASSERT
-            assertThrows(SaleNotFoundException.class, ()-> saleService.findSales(Specification.unrestricted()));
+            assertTrue(salesFound.isEmpty());
             verify(saleRepository, times(1)).findAll(any(Specification.class));
         }
     }
@@ -203,7 +239,7 @@ class SaleServiceTest {
             when(saleRepository.findById(sale.getSaleId())).thenReturn(Optional.empty());
 
             // ASSERT
-            assertThrows(SaleNotFoundException.class, ()-> saleService.findSaleById(sale.getSaleId()));
+            assertThrows(ResourceNotFoundException.class, ()-> saleService.findSaleById(sale.getSaleId()));
             verify(saleRepository, times(1)).findById(sale.getSaleId());
         }
     }
@@ -233,7 +269,7 @@ class SaleServiceTest {
             when(saleRepository.findById(sale.getSaleId())).thenReturn(Optional.empty());
 
             // ASSERT
-            assertThrows(SaleNotFoundException.class, ()-> saleService.deleteSale(sale.getSaleId()));
+            assertThrows(ResourceNotFoundException.class, ()-> saleService.deleteSale(sale.getSaleId()));
             verify(saleRepository, times(1)).findById(sale.getSaleId());
             verify(saleRepository, never()).deleteById(sale.getSaleId());
         }
@@ -275,7 +311,7 @@ class SaleServiceTest {
             when(saleRepository.findById(sale.getSaleId())).thenReturn(Optional.empty());
 
             // ASSERT
-            assertThrows(SaleNotFoundException.class, ()-> saleService.updatePaymentMethod(sale.getSaleId(), patchPaymentMethodDto));
+            assertThrows(ResourceNotFoundException.class, ()-> saleService.updatePaymentMethod(sale.getSaleId(), patchPaymentMethodDto));
             verify(saleRepository, times(1)).findById(sale.getSaleId());
             verify(saleRepository, never()).save(any(Sale.class));
         }
