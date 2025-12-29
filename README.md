@@ -81,9 +81,10 @@ volumes:
 ```
 mvn spring-boot:run
 ```
-A aplicação estará disponível em:
+Com a aplicação rodando, acesse a interface interativa do Swagger para testar os endpoints:
+  
 ```
-http://localhost:8080
+http://localhost:8080/swagger-ui/index.html#/
 ```
 
 - As migrações de banco são executadas automaticamente via Flyway.
