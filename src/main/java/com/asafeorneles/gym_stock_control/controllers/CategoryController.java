@@ -90,6 +90,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "200", description = "Category deleted successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid ID format"),
             @ApiResponse(responseCode = "404", description = "Category not found"),
+            @ApiResponse(responseCode = "409", description = "This category has already been used in a product"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @DeleteMapping("/{id}")
