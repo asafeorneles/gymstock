@@ -1,9 +1,9 @@
 package com.asafeorneles.gym_stock_control.configuration.security;
 
-import com.asafeorneles.gym_stock_control.entities.Role;
-import com.asafeorneles.gym_stock_control.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
@@ -19,25 +19,29 @@ public class TokenService {
     JwtEncoder jwtEncoder;
 
     @Value("${jwt.expiration}")
-    private long expiresIn;
+    private Long expiresIn;
 
-    public String generateToken(User user){
+    public String generateToken(Authentication authentication) {
 
-        String scopes = user.getRoles().stream()
-                .map(Role::getName)
+        String scopes = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(" "));
 
         Instant now = Instant.now();
 
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("gym-stock-api")
-                .subject(user.getUserId().toString())
+                .subject(authentication.getName())
                 .issuedAt(now)
                 .expiresAt(now.plusSeconds(expiresIn))
                 .claim("scopes", scopes)
                 .build();
 
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+    }
+
+    public Long getTokenExpiresIn() {
+        return expiresIn;
     }
 
 }
