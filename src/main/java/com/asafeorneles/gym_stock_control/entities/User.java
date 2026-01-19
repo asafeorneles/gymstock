@@ -1,11 +1,14 @@
 package com.asafeorneles.gym_stock_control.entities;
 
+import com.asafeorneles.gym_stock_control.enums.ActivityStatus;
+import com.asafeorneles.gym_stock_control.exceptions.ActivityStatusException;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
@@ -34,6 +37,37 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles;
+
+    @Column(name = "activity_status")
+    @Enumerated(EnumType.STRING)
+    private ActivityStatus activityStatus;
+
+    @Column(name = "registered_date")
+    private LocalDateTime registeredDate;
+
+    @PrePersist
+    public void prePersist() {
+        this.registeredDate = LocalDateTime.now();
+    }
+
+    public void inactivity(){
+        if (this.activityStatus == ActivityStatus.INACTIVITY){
+            throw new ActivityStatusException("User is already inactive!");
+        }
+
+        this.activityStatus = ActivityStatus.INACTIVITY;
+    }
+
+    public void activity(){
+        if (this.activityStatus == ActivityStatus.ACTIVE){
+            throw new ActivityStatusException("User is already active!");
+        }
+        this.activityStatus = ActivityStatus.ACTIVE;
+    }
+
+    public Boolean isInactivity(){
+        return this.activityStatus == ActivityStatus.INACTIVITY;
+    }
 
     @Builder
     public User(UUID userId, String username, String password, Set<Role> roles) {

@@ -6,10 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -32,5 +29,19 @@ public class UserController {
     public ResponseEntity<UserResponseDto> getUserById(@PathVariable(name = "id") UUID id){
         UserResponseDto user = userService.getUserById(id);
         return ResponseEntity.status(HttpStatus.OK).body(user);
+    }
+
+    @PreAuthorize("hasAuthority('user:deactivate')")
+    @PatchMapping("/{id}/deactivate")
+    public ResponseEntity<String> deactivateUser(@PathVariable(name = "id") UUID id){
+        userService.deactivateUser(id);
+        return ResponseEntity.status(HttpStatus.OK).body("User deactivated successfully");
+    }
+
+    @PreAuthorize("hasAuthority('user:activate')")
+    @PatchMapping("/{id}/activate")
+    public ResponseEntity<String> activateUser(@PathVariable(name = "id") UUID id){
+        userService.activityUser(id);
+        return ResponseEntity.status(HttpStatus.OK).body("User activate successfully");
     }
 }

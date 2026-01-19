@@ -1,11 +1,13 @@
 package com.asafeorneles.gym_stock_control.services;
 
 import com.asafeorneles.gym_stock_control.dtos.user.UserResponseDto;
+import com.asafeorneles.gym_stock_control.entities.User;
 import com.asafeorneles.gym_stock_control.exceptions.ResourceNotFoundException;
 import com.asafeorneles.gym_stock_control.mapper.UserMapper;
 import com.asafeorneles.gym_stock_control.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -25,5 +27,25 @@ public class UserService {
         return userRepository.findById(id)
                 .map(UserMapper::userToUserResponse)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found by this id: " + id));
+    }
+
+    @Transactional
+    public void deactivateUser(UUID id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found by this id: " + id));
+
+        user.inactivity();
+
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void activityUser(UUID id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found by this id: " + id));
+
+        user.activity();
+
+        userRepository.save(user);
     }
 }
