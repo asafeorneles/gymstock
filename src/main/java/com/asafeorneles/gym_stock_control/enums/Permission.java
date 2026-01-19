@@ -29,6 +29,11 @@ public enum Permission {
     PRODUCT_INVENTORY_UPDATE_QUANTITY("inventory:updateQuantity"),
     PRODUCT_INVENTORY_UPDATE_LOW_STOCK("inventory:updateLowStock"),
 
+    SALE_CREATE("sale:create"),
+    SALE_READ("sale:read"),
+    SALE_UPDATE("sale:update"),
+    SALE_DELETE("sale:delete"),
+
     COUPON_CREATE("coupon:create"),
     COUPON_READ("coupon:read"),
     COUPON_DEACTIVATE("coupon:deactivate"),
