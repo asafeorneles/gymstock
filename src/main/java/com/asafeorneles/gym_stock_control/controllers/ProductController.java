@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,6 +34,7 @@ public class ProductController {
             @ApiResponse(responseCode = "409", description = "Product with same name and brand already exists"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
+    @PreAuthorize("hasAuthority('product:create')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseProductDetailDto> createProduct(@RequestBody @Valid CreateProductDto createProductDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(productService.createProduct(createProductDto));
@@ -45,6 +47,7 @@ public class ProductController {
             @ApiResponse(responseCode = "400", description = "Invalid filter parameters"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
+    @PreAuthorize("hasAuthority('product:read')")
     @GetMapping
     public ResponseEntity<List<ResponseProductDto>> getAllProducts(@ParameterObject ProductQueryFilters filters) {
         return ResponseEntity.status(HttpStatus.OK).body(productService.getAllProducts(filters.toSpecification()));
@@ -57,6 +60,7 @@ public class ProductController {
             @ApiResponse(responseCode = "400", description = "Invalid filter parameters"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
+    @PreAuthorize("hasAuthority('productDetails:read')")
     @GetMapping("/details")
     public ResponseEntity<List<ResponseProductDetailDto>> getAllProductsDetails(@ParameterObject ProductAdminQueryFilters filters) {
         return ResponseEntity.status(HttpStatus.OK).body(productService.getAllProductsDetails(filters.toSpecification()));
@@ -69,6 +73,7 @@ public class ProductController {
             @ApiResponse(responseCode = "404", description = "Product not found"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
+    @PreAuthorize("hasAuthority('product:read')")
     @GetMapping(value = "/{id}")
     public ResponseEntity<ResponseProductDto> getProductById(@PathVariable(name = "id") UUID id){
         return ResponseEntity.status(HttpStatus.OK).body(productService.getProductById(id));
@@ -80,6 +85,7 @@ public class ProductController {
             @ApiResponse(responseCode = "404", description = "Products not found"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
+    @PreAuthorize("hasAuthority('productLowStock:read')")
     @GetMapping("/low-stock")
     public ResponseEntity<List<ResponseProductDetailDto>> getAllProductsWithLowStock(){
         return ResponseEntity.status(HttpStatus.OK).body(productService.getAllProductsWithLowStock());
@@ -93,6 +99,7 @@ public class ProductController {
             @ApiResponse(responseCode = "409", description = "Conflict updating product"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
+    @PreAuthorize("hasAuthority('product:update')")
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseProductDetailDto> updateProduct(@PathVariable(name = "id") UUID id, @RequestBody @Valid UpdateProductDto updateProductDto){
         return ResponseEntity.status(HttpStatus.OK).body(productService.updateProduct(id, updateProductDto));
@@ -106,6 +113,7 @@ public class ProductController {
             @ApiResponse(responseCode = "409", description = "Product is already inactive"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
+    @PreAuthorize("hasAuthority('product:deactivate')")
     @PatchMapping(value = "/{id}/deactivate", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseProductDetailDto> deactivateProduct(@PathVariable(name = "id") UUID id, @RequestBody @Valid DeactivateProductDto deactivateProductDto){
         return ResponseEntity.status(HttpStatus.OK).body(productService.deactivateProduct(id, deactivateProductDto));
@@ -119,6 +127,7 @@ public class ProductController {
             @ApiResponse(responseCode = "409", description = "Product is already active"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
+    @PreAuthorize("hasAuthority('product:activate')")
     @PatchMapping(value = "/{id}/activate")
     public ResponseEntity<ResponseProductDetailDto> activateProduct(@PathVariable(name = "id") UUID id){
         return ResponseEntity.status(HttpStatus.OK).body(productService.activateProduct(id));
@@ -132,6 +141,7 @@ public class ProductController {
             @ApiResponse(responseCode = "409", description = "This product has already been used in a sale"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
+    @PreAuthorize("hasAuthority('product:delete')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteProduct(@PathVariable(name = "id") UUID id){
         productService.deleteProduct(id);

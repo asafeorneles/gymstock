@@ -11,7 +11,7 @@ public enum Permission {
 
     PRODUCT_CREATE("product:create"),
     PRODUCT_READ("product:read"),
-    PRODUCT_DETAILS_READ("productDetail:read"),
+    PRODUCT_DETAILS_READ("productDetails:read"),
     PRODUCT_LOW_STOCK_READ("productLowStock:read"),
     PRODUCT_UPDATE("product:update"),
     PRODUCT_DEACTIVATE("product:deactivate"),

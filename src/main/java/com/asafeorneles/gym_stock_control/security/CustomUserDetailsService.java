@@ -47,8 +47,6 @@ public class CustomUserDetailsService implements UserDetailsService {
                 case "ROLE_BASIC":
 
                     authorities.add(new SimpleGrantedAuthority(Permission.PRODUCT_READ.getPermission()));
-                    authorities.add(new SimpleGrantedAuthority(Permission.PRODUCT_DETAILS_READ.getPermission()));
-                    authorities.add(new SimpleGrantedAuthority(Permission.PRODUCT_LOW_STOCK_READ.getPermission()));
                     authorities.add(new SimpleGrantedAuthority(Permission.CATEGORY_READ.getPermission()));
                     authorities.add(new SimpleGrantedAuthority(Permission.PRODUCT_INVENTORY_READ.getPermission()));
                     authorities.add(new SimpleGrantedAuthority(Permission.COUPON_READ.getPermission()));
