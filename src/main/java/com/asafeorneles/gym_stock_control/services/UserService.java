@@ -2,10 +2,12 @@ package com.asafeorneles.gym_stock_control.services;
 
 import com.asafeorneles.gym_stock_control.dtos.user.UserResponseDto;
 import com.asafeorneles.gym_stock_control.entities.User;
+import com.asafeorneles.gym_stock_control.exceptions.BusinessConflictException;
 import com.asafeorneles.gym_stock_control.exceptions.ResourceNotFoundException;
 import com.asafeorneles.gym_stock_control.mapper.UserMapper;
 import com.asafeorneles.gym_stock_control.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,9 +32,14 @@ public class UserService {
     }
 
     @Transactional
-    public void deactivateUser(UUID id) {
+    public void deactivateUser(UUID id, JwtAuthenticationToken token) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found by this id: " + id));
+
+        UUID userId = UUID.fromString(token.getName());
+        if (user.getUserId().equals(userId)){
+            throw new BusinessConflictException("You cannot deactivate your own user account.");
+        }
 
         user.inactivity();
 

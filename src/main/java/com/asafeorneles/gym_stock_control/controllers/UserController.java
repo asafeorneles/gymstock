@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,8 +34,8 @@ public class UserController {
 
     @PreAuthorize("hasAuthority('user:deactivate')")
     @PatchMapping("/{id}/deactivate")
-    public ResponseEntity<String> deactivateUser(@PathVariable(name = "id") UUID id){
-        userService.deactivateUser(id);
+    public ResponseEntity<String> deactivateUser(@PathVariable(name = "id") UUID id, JwtAuthenticationToken token){
+        userService.deactivateUser(id, token);
         return ResponseEntity.status(HttpStatus.OK).body("User deactivated successfully");
     }
 
