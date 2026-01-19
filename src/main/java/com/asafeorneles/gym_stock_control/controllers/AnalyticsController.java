@@ -12,6 +12,7 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,11 +32,13 @@ public class AnalyticsController {
     AnalyticsService analyticsService;
 
     @Operation(summary = "Get top n best-selling products")
+    @PreAuthorize("hasAuthority('analytics:read')")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Product data returned successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid request parameter format"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
+
     @GetMapping("/top-products-best-selling")
     public ResponseEntity<List<TopSellingProductsDto>> getTopSellingProducts(@RequestParam(required = false) @Min(1)@Max(30)Integer limit){
         return ResponseEntity.status(HttpStatus.OK).body(analyticsService.getTopSellingProducts(limit));
@@ -47,6 +50,7 @@ public class AnalyticsController {
             @ApiResponse(responseCode = "400", description = "Invalid date format or missing required parameters"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
+    @PreAuthorize("hasAuthority('analytics:read')")
     @GetMapping("/top-products-best-selling-by-period")
     public ResponseEntity<List<TopSellingProductsDto>> getTopSellingProductsByPeriod(@RequestParam(required = false) @Min(1)@Max(30)Integer limit, @RequestParam @NotNull LocalDate startDate, @RequestParam @NotNull LocalDate endDate){
         return ResponseEntity.status(HttpStatus.OK).body(analyticsService.getTopSellingProductsByPeriod(limit, startDate, endDate));

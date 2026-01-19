@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,6 +35,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "409", description = "Conflict creating category"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
+    @PreAuthorize("hasAuthority('category:create')")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseCategoryDetailsDto> createCategory(@RequestBody @Valid CreateCategoryDto createCategoryDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(categoryService.createCategory(createCategoryDto));
@@ -45,6 +47,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "404", description = "Categories not found"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
+    @PreAuthorize("hasAuthority('category:read')")
     @GetMapping
     public ResponseEntity<List<ResponseCategoryDetailsDto>> getAllCategories(@ParameterObject CategoryQueryFilters filters) {
         return ResponseEntity.status(HttpStatus.OK).body(categoryService.getAllCategories(filters.toSpecification()));
@@ -57,6 +60,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "404", description = "Category not found"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
+    @PreAuthorize("hasAuthority('category:read')")
     @GetMapping("/{id}")
     public ResponseEntity<ResponseCategoryDetailsDto> getCategoryById(@PathVariable(name = "id") UUID id) {
         return ResponseEntity.status(HttpStatus.OK).body(categoryService.getCategoryById(id));
@@ -70,16 +74,19 @@ public class CategoryController {
             @ApiResponse(responseCode = "409", description = "Conflict updating Category"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
+    @PreAuthorize("hasAuthority('category:update')")
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<ResponseCategoryDetailsDto> updateCategory(@PathVariable(name = "id") UUID id, @RequestBody @Valid UpdateCategoryDto updateCategoryDto) {
         return ResponseEntity.status(HttpStatus.OK).body(categoryService.updateCategory(id, updateCategoryDto));
     }
 
+    @PreAuthorize("hasAuthority('category:activate')")
     @PatchMapping("/{id}/activate")
     public ResponseEntity<ResponseCategoryDetailsDto> activateCategory(@PathVariable(value = "id") UUID id){
         return ResponseEntity.status(HttpStatus.OK).body(categoryService.activateCategory(id));
     }
 
+    @PreAuthorize("hasAuthority('category:deactivate')")
     @PatchMapping("/{id}/deactivate")
     public ResponseEntity<ResponseCategoryDetailsDto> deactivateCategory(@PathVariable(value = "id") UUID id){
         return ResponseEntity.status(HttpStatus.OK).body(categoryService.deactivateCategory(id));
@@ -93,6 +100,7 @@ public class CategoryController {
             @ApiResponse(responseCode = "409", description = "This category has already been used in a product"),
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
+    @PreAuthorize("hasAuthority('category:delete')")
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteCategory(@PathVariable(name = "id") UUID id) {
         categoryService.deleteCategory(id);
