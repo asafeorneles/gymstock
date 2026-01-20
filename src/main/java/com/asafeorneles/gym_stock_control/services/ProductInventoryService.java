@@ -11,6 +11,7 @@ import com.asafeorneles.gym_stock_control.exceptions.InsufficientProductQuantity
 import com.asafeorneles.gym_stock_control.exceptions.ResourceNotFoundException;
 import com.asafeorneles.gym_stock_control.mapper.ProductInventoryMapper;
 import com.asafeorneles.gym_stock_control.repositories.ProductInventoryRepository;
+import com.asafeorneles.gym_stock_control.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,9 @@ public class ProductInventoryService {
 
     @Autowired
     ProductInventoryRepository productInventoryRepository;
+
+    @Autowired
+    ProductRepository productRepository;
 
     public List<ResponseProductInventoryDetailDto> findProductsInventories() {
         return productInventoryRepository.findAll()
@@ -42,6 +46,11 @@ public class ProductInventoryService {
         ProductInventory productInventoryFound = productInventoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product Inventory not found by this id: " + id));
 
+        Product product = productRepository.findById(productInventoryFound.getProductInventoryId())
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found updating the inventory"));
+
+        ProductService.checkProductIsActivityBeforeUpdate(product.isActivity(), "This product is inactive. You can only update the inventory of products in the activity.");
+
         ProductInventoryMapper.patchProductInventoryQuantity(productInventoryFound, patchProductInventoryQuantity);
 
         assignInventoryStatus(productInventoryFound);
@@ -55,6 +64,11 @@ public class ProductInventoryService {
     public ResponseProductInventoryDetailDto updateLowStockThreshold(UUID id, PatchProductInventoryLowStockThresholdDto patchProductInventoryLowStockThreshold) {
         ProductInventory productInventoryFound = productInventoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product Inventory not found by this id: " + id));
+
+        Product product = productRepository.findById(productInventoryFound.getProductInventoryId())
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found updating the inventory"));
+
+        ProductService.checkProductIsActivityBeforeUpdate(product.isActivity(), "This product is inactive. You can only update the inventory of products in the activity.");
 
         ProductInventoryMapper.patchProductInventoryLowStockThreshold(productInventoryFound, patchProductInventoryLowStockThreshold);
 
@@ -83,8 +97,8 @@ public class ProductInventoryService {
         InventoryStatus inventoryStatus;
         inventoryStatus =
                 inventory.getQuantity() == 0 ? InventoryStatus.OUT_OF_STOCK
-                : inventory.getQuantity() <= inventory.getLowStockThreshold() ? InventoryStatus.LOW_STOCK
-                : InventoryStatus.OK;
+                        : inventory.getQuantity() <= inventory.getLowStockThreshold() ? InventoryStatus.LOW_STOCK
+                        : InventoryStatus.OK;
         inventory.setInventoryStatus(inventoryStatus);
     }
 

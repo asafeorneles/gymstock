@@ -36,7 +36,7 @@ public class ProductService {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("The category {" + categoryId + "} does not exist. Please insert a valid category."));
 
-        if (!category.isActivity()){
+        if (!category.isActivity()) {
             throw new ActivityStatusException("This category is inactivity!");
         }
 
@@ -87,6 +87,8 @@ public class ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found by id: " + id));
 
+        checkProductIsActivityBeforeUpdate(product.isActivity(), "This product is inactive.. You can only update activity products.");
+
         UUID updateCategoryId = updateProductDto.categoryId();
         Category category = categoryRepository.findById(updateCategoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("The category {" + updateCategoryId + "} does not exist. Please insert a valid category to update the product."));
@@ -100,7 +102,7 @@ public class ProductService {
 
     @Transactional
     public void deleteProduct(UUID id) {
-        if (saleItemRepository.existsByProduct_ProductId(id)){
+        if (saleItemRepository.existsByProduct_ProductId(id)) {
             throw new BusinessConflictException("This product has already been used in a sale. Please use the deactivate option.");
         }
 
@@ -133,5 +135,11 @@ public class ProductService {
         productRepository.save(product);
 
         return ProductMapper.productToResponseDetailsProduct(product);
+    }
+
+    public static void checkProductIsActivityBeforeUpdate(boolean isActivity, String error) {
+        if (!isActivity) {
+            throw new BusinessConflictException(error);
+        }
     }
 }
