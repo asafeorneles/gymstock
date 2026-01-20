@@ -4,21 +4,19 @@ import com.asafeorneles.gym_stock_control.dtos.SaleItem.CreateSaleItemDto;
 import com.asafeorneles.gym_stock_control.dtos.sale.CreateSaleDto;
 import com.asafeorneles.gym_stock_control.dtos.sale.PatchPaymentMethodDto;
 import com.asafeorneles.gym_stock_control.dtos.sale.ResponseSaleDto;
-import com.asafeorneles.gym_stock_control.entities.Coupon;
-import com.asafeorneles.gym_stock_control.entities.Product;
-import com.asafeorneles.gym_stock_control.entities.Sale;
-import com.asafeorneles.gym_stock_control.entities.SaleItem;
+import com.asafeorneles.gym_stock_control.entities.*;
 import com.asafeorneles.gym_stock_control.exceptions.ResourceNotFoundException;
 import com.asafeorneles.gym_stock_control.exceptions.ActivityStatusException;
 import com.asafeorneles.gym_stock_control.mapper.SaleMapper;
 import com.asafeorneles.gym_stock_control.repositories.CouponRepository;
 import com.asafeorneles.gym_stock_control.repositories.ProductRepository;
 import com.asafeorneles.gym_stock_control.repositories.SaleRepository;
-import jakarta.validation.Valid;
+import com.asafeorneles.gym_stock_control.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,9 +42,16 @@ public class SaleService {
     @Autowired
     CouponService couponService;
 
+    @Autowired
+    UserRepository userRepository;
+
     @Transactional
-    public ResponseSaleDto createSale(@Valid CreateSaleDto createSaleDto) {
-        Sale sale = SaleMapper.createSaleToSale(createSaleDto);
+    public ResponseSaleDto createSale(CreateSaleDto createSaleDto, JwtAuthenticationToken token) {
+
+        User user = userRepository.findById(UUID.fromString(token.getName()))
+                .orElseThrow(() -> new ResourceNotFoundException("User not found to create the sale."));
+
+        Sale sale = SaleMapper.createSaleToSale(createSaleDto, user);
         List<SaleItem> saleItems = newSaleItemList(createSaleDto.saleItems(), productRepository, sale, productInventoryService);
 
         sale.setSaleItems(saleItems);

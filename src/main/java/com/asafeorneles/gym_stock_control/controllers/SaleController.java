@@ -19,6 +19,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -40,8 +41,8 @@ public class SaleController {
     })
     @PreAuthorize("hasAuthority('sale:create')")
     @PostMapping
-    public ResponseEntity<ResponseSaleDto> createSale(@RequestBody @Valid CreateSaleDto createSaleDto){
-        return ResponseEntity.status(HttpStatus.CREATED).body(saleService.createSale(createSaleDto));
+    public ResponseEntity<ResponseSaleDto> createSale(@RequestBody @Valid CreateSaleDto createSaleDto, JwtAuthenticationToken token){
+        return ResponseEntity.status(HttpStatus.CREATED).body(saleService.createSale(createSaleDto, token));
     }
 
     @Operation(summary = "Get all sales")

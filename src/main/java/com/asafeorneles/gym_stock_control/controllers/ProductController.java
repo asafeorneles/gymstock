@@ -1,7 +1,7 @@
 package com.asafeorneles.gym_stock_control.controllers;
 
 import com.asafeorneles.gym_stock_control.dtos.product.*;
-import com.asafeorneles.gym_stock_control.queryFilters.ProductAdminQueryFilters;
+import com.asafeorneles.gym_stock_control.queryFilters.ProductDetailsQueryFilters;
 import com.asafeorneles.gym_stock_control.queryFilters.ProductQueryFilters;
 import com.asafeorneles.gym_stock_control.services.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -62,7 +62,7 @@ public class ProductController {
     })
     @PreAuthorize("hasAuthority('productDetails:read')")
     @GetMapping("/details")
-    public ResponseEntity<List<ResponseProductDetailDto>> getAllProductsDetails(@ParameterObject ProductAdminQueryFilters filters) {
+    public ResponseEntity<List<ResponseProductDetailDto>> getAllProductsDetails(@ParameterObject ProductDetailsQueryFilters filters) {
         return ResponseEntity.status(HttpStatus.OK).body(productService.getAllProductsDetails(filters.toSpecification()));
     }
 

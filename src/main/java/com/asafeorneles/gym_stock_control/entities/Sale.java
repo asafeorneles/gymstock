@@ -2,7 +2,6 @@ package com.asafeorneles.gym_stock_control.entities;
 
 import com.asafeorneles.gym_stock_control.enums.PaymentMethod;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,6 +39,10 @@ public class Sale {
     @Enumerated(EnumType.STRING)
     private PaymentMethod paymentMethod;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
     @Column(name = "created_date")
     private LocalDateTime createdDate;
 
@@ -66,13 +69,16 @@ public class Sale {
             List<SaleItem> saleItems,
             BigDecimal totalPrice,
             PaymentMethod paymentMethod,
-            Coupon coupon) {
+            Coupon coupon,
+            User user
+    ) {
 
         this.saleId = saleId;
         this.saleItems = saleItems;
         this.totalPrice = totalPrice;
         this.paymentMethod = paymentMethod;
         this.coupon = coupon;
+        this.user = user;
     }
     public Boolean containsCoupon(){
         return this.getCoupon() != null;

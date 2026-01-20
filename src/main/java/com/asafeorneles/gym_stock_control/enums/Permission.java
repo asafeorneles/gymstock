@@ -8,6 +8,8 @@ public enum Permission {
     USER_READ("user:read"),
     USER_UPDATE("user:update"),
     USER_DELETE("user:delete"),
+    USER_DEACTIVATE("user:deactivate"),
+    USER_ACTIVATE("user:activate"),
 
     PRODUCT_CREATE("product:create"),
     PRODUCT_READ("product:read"),

@@ -1,5 +1,8 @@
 package com.asafeorneles.gym_stock_control.security;
 
+import com.asafeorneles.gym_stock_control.entities.User;
+import com.asafeorneles.gym_stock_control.exceptions.ResourceNotFoundException;
+import com.asafeorneles.gym_stock_control.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -18,6 +21,9 @@ public class TokenService {
     @Autowired
     JwtEncoder jwtEncoder;
 
+    @Autowired
+    UserRepository userRepository;
+
     @Value("${jwt.expiration}")
     private Long expiresIn;
 
@@ -29,12 +35,18 @@ public class TokenService {
 
         Instant now = Instant.now();
 
+        String username = authentication.getName();
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found creating JWT token"));
+
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("gym-stock-api")
-                .subject(authentication.getName())
+                .subject(user.getUserId().toString())
                 .issuedAt(now)
                 .expiresAt(now.plusSeconds(expiresIn))
                 .claim("scopes", scopes)
+                .claim("username", username)
                 .build();
 
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
