@@ -33,6 +33,7 @@ public class SetupService {
 
         if (userRepository.existsByRoles_Name(RoleName.ROLE_ADMIN.name())){
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Já existe um administrador");
+            // Create a custom exception after
         }
 
         Role roleAdmin = roleRepository.findByName(RoleName.ROLE_ADMIN.name())

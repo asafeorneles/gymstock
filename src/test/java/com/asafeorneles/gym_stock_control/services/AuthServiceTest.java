@@ -57,7 +57,7 @@ class AuthServiceTest {
     @BeforeEach
     void setUp() {
         loginRequestDto = new LoginRequestDto("zafin", "123");
-        registerRequestDto = new RegisterRequestDto("zafin", "123", "BASIC");
+        registerRequestDto = new RegisterRequestDto("zafin", "123", "ROLE_BASIC");
         role = new Role(2L, "BASIC");
     }
 
@@ -104,7 +104,7 @@ class AuthServiceTest {
             when(userRepository.existsByUsername("zafin"))
                     .thenReturn(false);
 
-            when(roleRepository.findByName("BASIC"))
+            when(roleRepository.findByName("ROLE_BASIC"))
                     .thenReturn(Optional.empty());
 
             assertThrows(ResourceNotFoundException.class, () ->
