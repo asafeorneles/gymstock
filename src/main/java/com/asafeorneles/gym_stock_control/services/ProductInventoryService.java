@@ -49,7 +49,7 @@ public class ProductInventoryService {
         Product product = productRepository.findById(productInventoryFound.getProductInventoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found updating the inventory"));
 
-        ProductService.checkProductIsActivityBeforeUpdate(product.isActivity(), "This product is inactive. You can only update the inventory of products in the activity.");
+        ProductService.checkProductIsActiveBeforeUpdate(product.isActivity(), "This product is inactive. You can only update the inventory of products in the activity.");
 
         ProductInventoryMapper.patchProductInventoryQuantity(productInventoryFound, patchProductInventoryQuantity);
 
@@ -68,7 +68,7 @@ public class ProductInventoryService {
         Product product = productRepository.findById(productInventoryFound.getProductInventoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found updating the inventory"));
 
-        ProductService.checkProductIsActivityBeforeUpdate(product.isActivity(), "This product is inactive. You can only update the inventory of products in the activity.");
+        ProductService.checkProductIsActiveBeforeUpdate(product.isActivity(), "This product is inactive. You can only update the inventory of products in the activity.");
 
         ProductInventoryMapper.patchProductInventoryLowStockThreshold(productInventoryFound, patchProductInventoryLowStockThreshold);
 

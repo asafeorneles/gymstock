@@ -87,7 +87,7 @@ public class ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found by id: " + id));
 
-        checkProductIsActivityBeforeUpdate(product.isActivity(), "This product is inactive.. You can only update activity products.");
+        checkProductIsActiveBeforeUpdate(product.isActivity(), "This product is inactive.. You can only update activity products.");
 
         UUID updateCategoryId = updateProductDto.categoryId();
         Category category = categoryRepository.findById(updateCategoryId)
@@ -137,7 +137,7 @@ public class ProductService {
         return ProductMapper.productToResponseDetailsProduct(product);
     }
 
-    public static void checkProductIsActivityBeforeUpdate(boolean isActivity, String error) {
+    public static void checkProductIsActiveBeforeUpdate(boolean isActivity, String error) {
         if (!isActivity) {
             throw new BusinessConflictException(error);
         }
