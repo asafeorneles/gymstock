@@ -80,12 +80,29 @@ public class CategoryController {
         return ResponseEntity.status(HttpStatus.OK).body(categoryService.updateCategory(id, updateCategoryDto));
     }
 
+
+    @Operation(summary = "Activate a category")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Category activated successfully"),
+            @ApiResponse(responseCode = "403", description = "The logged-in user does not have permission to access this route."),
+            @ApiResponse(responseCode = "404", description = "Category not found"),
+            @ApiResponse(responseCode = "409", description = "Category is already active"),
+            @ApiResponse(responseCode = "500", description = "Unexpected server error")
+    })
     @PreAuthorize("hasAuthority('category:activate')")
     @PatchMapping("/{id}/activate")
     public ResponseEntity<ResponseCategoryDetailsDto> activateCategory(@PathVariable(value = "id") UUID id){
         return ResponseEntity.status(HttpStatus.OK).body(categoryService.activateCategory(id));
     }
 
+    @Operation(summary = "Deactivate a category")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Category deactivated successfully"),
+            @ApiResponse(responseCode = "403", description = "The logged-in user does not have permission to access this route."),
+            @ApiResponse(responseCode = "404", description = "Category not found"),
+            @ApiResponse(responseCode = "409", description = "Category is already inactive"),
+            @ApiResponse(responseCode = "500", description = "Unexpected server error")
+    })
     @PreAuthorize("hasAuthority('category:deactivate')")
     @PatchMapping("/{id}/deactivate")
     public ResponseEntity<ResponseCategoryDetailsDto> deactivateCategory(@PathVariable(value = "id") UUID id){

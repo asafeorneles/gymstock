@@ -64,7 +64,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body("User deactivated successfully");
     }
 
-    @Operation(summary = "Deactivate a user")
+    @Operation(summary = "Activate a user")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User activated successfully"),
             @ApiResponse(responseCode = "403", description = "The logged-in user does not have permission to access this route."),
