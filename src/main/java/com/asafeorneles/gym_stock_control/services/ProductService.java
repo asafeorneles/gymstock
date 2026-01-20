@@ -36,7 +36,7 @@ public class ProductService {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("The category {" + categoryId + "} does not exist. Please insert a valid category."));
 
-        if (!category.isActivity()){
+        if (!category.isActivity()) {
             throw new ActivityStatusException("This category is inactivity!");
         }
 
@@ -84,54 +84,62 @@ public class ProductService {
 
     @Transactional
     public ResponseProductDetailDto updateProduct(UUID id, UpdateProductDto updateProductDto) {
-        Product productFound = productRepository.findById(id)
+        Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found by id: " + id));
+
+        checkProductIsActiveBeforeUpdate(product.isActivity(), "This product is inactive.. You can only update activity products.");
 
         UUID updateCategoryId = updateProductDto.categoryId();
         Category category = categoryRepository.findById(updateCategoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("The category {" + updateCategoryId + "} does not exist. Please insert a valid category to update the product."));
 
-        ProductMapper.updateProductToProduct(updateProductDto, productFound, category);
+        ProductMapper.updateProductToProduct(updateProductDto, product, category);
 
-        productRepository.save(productFound);
+        productRepository.save(product);
 
-        return ProductMapper.productToResponseDetailsProduct(productFound);
+        return ProductMapper.productToResponseDetailsProduct(product);
     }
 
     @Transactional
     public void deleteProduct(UUID id) {
-        if (saleItemRepository.existsByProduct_ProductId(id)){
+        if (saleItemRepository.existsByProduct_ProductId(id)) {
             throw new BusinessConflictException("This product has already been used in a sale. Please use the deactivate option.");
         }
 
-        Product productFound = productRepository.findById(id)
+        Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found by id: " + id));
 
-        productRepository.delete(productFound);
+        productRepository.delete(product);
     }
 
 
     @Transactional
     public ResponseProductDetailDto deactivateProduct(UUID id, DeactivateProductDto deactivateProductDto) {
-        Product productFound = productRepository.findById(id)
+        Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found by id: " + id));
 
-        productFound.inactivity(deactivateProductDto.reason());
+        product.inactivity(deactivateProductDto.reason());
 
-        productRepository.save(productFound);
+        productRepository.save(product);
 
-        return ProductMapper.productToResponseDetailsProduct(productFound);
+        return ProductMapper.productToResponseDetailsProduct(product);
     }
 
     @Transactional
     public ResponseProductDetailDto activateProduct(UUID id) {
-        Product productFound = productRepository.findById(id)
+        Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found by id: " + id));
 
-        productFound.activity();
+        product.activity();
 
-        productRepository.save(productFound);
+        productRepository.save(product);
 
-        return ProductMapper.productToResponseDetailsProduct(productFound);
+        return ProductMapper.productToResponseDetailsProduct(product);
+    }
+
+    public static void checkProductIsActiveBeforeUpdate(boolean isActivity, String error) {
+        if (!isActivity) {
+            throw new BusinessConflictException(error);
+        }
     }
 }
