@@ -3,12 +3,15 @@ package com.asafeorneles.gym_stock_control.mapper;
 import com.asafeorneles.gym_stock_control.dtos.coupon.CouponAppliedDto;
 import com.asafeorneles.gym_stock_control.dtos.sale.CreateSaleDto;
 import com.asafeorneles.gym_stock_control.dtos.sale.ResponseSaleDto;
+import com.asafeorneles.gym_stock_control.dtos.user.SoldByUserDto;
 import com.asafeorneles.gym_stock_control.entities.Sale;
+import com.asafeorneles.gym_stock_control.entities.User;
 
 public class SaleMapper {
-    public static Sale createSaleToSale(CreateSaleDto createSaleDto) {
+    public static Sale createSaleToSale(CreateSaleDto createSaleDto, User user) {
         return Sale.builder()
                 .paymentMethod(createSaleDto.paymentMethod())
+                .user(user)
                 .build();
     }
 
@@ -20,6 +23,7 @@ public class SaleMapper {
                     new CouponAppliedDto(sale.getCoupon().getCode(), sale.getDiscountAmount()),
                     sale.getTotalPrice(),
                     sale.getPaymentMethod(),
+                    new SoldByUserDto(sale.getUser().getUsername(), sale.getUser().getUserId()),
                     sale.getCreatedDate()
             );
         }
@@ -30,6 +34,7 @@ public class SaleMapper {
                 null,
                 sale.getTotalPrice(),
                 sale.getPaymentMethod(),
+                new SoldByUserDto(sale.getUser().getUsername(), sale.getUser().getUserId()),
                 sale.getCreatedDate()
         );
     }

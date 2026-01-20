@@ -2,6 +2,7 @@ package com.asafeorneles.gym_stock_control.dtos.sale;
 
 import com.asafeorneles.gym_stock_control.dtos.SaleItem.ResponseSaleItemDto;
 import com.asafeorneles.gym_stock_control.dtos.coupon.CouponAppliedDto;
+import com.asafeorneles.gym_stock_control.dtos.user.SoldByUserDto;
 import com.asafeorneles.gym_stock_control.enums.PaymentMethod;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -16,6 +17,7 @@ public record ResponseSaleDto(
         CouponAppliedDto couponApplied,
         BigDecimal totalPrice,
         PaymentMethod paymentMethod,
+        SoldByUserDto soldBy,
         @JsonFormat(pattern = "dd/MM/yyyy HH:mm")
         LocalDateTime createdDate
 ) {
