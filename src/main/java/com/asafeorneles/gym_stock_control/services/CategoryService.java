@@ -47,6 +47,8 @@ public class CategoryService {
         Category categoryFound = categoryRepository
                 .findById(id).orElseThrow(() -> new ResourceNotFoundException("Category not found by id: " + id));
 
+        checkCategoryIsActiveBeforeUpdate(categoryFound.isActivity(), "This category is inactive. You can only update active categories.");
+
         CategoryMapper.updateCategoryToCategory(categoryFound, updateCategoryDto);
 
         categoryRepository.save(categoryFound);
@@ -88,5 +90,11 @@ public class CategoryService {
         categoryRepository.save(categoryFound);
 
         return CategoryMapper.categoryToResponseCategoryDetails(categoryFound);
+    }
+
+    public static void checkCategoryIsActiveBeforeUpdate(boolean isActive, String error){
+        if (!isActive){
+            throw new BusinessConflictException(error);
+        }
     }
 }
