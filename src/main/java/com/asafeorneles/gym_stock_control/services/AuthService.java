@@ -4,11 +4,13 @@ import com.asafeorneles.gym_stock_control.dtos.auth.LoginRequestDto;
 import com.asafeorneles.gym_stock_control.dtos.auth.LoginResponseDto;
 import com.asafeorneles.gym_stock_control.dtos.auth.RefreshTokenRequestDto;
 import com.asafeorneles.gym_stock_control.dtos.auth.RegisterRequestDto;
+import com.asafeorneles.gym_stock_control.entities.RefreshToken;
 import com.asafeorneles.gym_stock_control.entities.Role;
 import com.asafeorneles.gym_stock_control.entities.User;
 import com.asafeorneles.gym_stock_control.exceptions.BusinessConflictException;
 import com.asafeorneles.gym_stock_control.exceptions.ResourceNotFoundException;
 import com.asafeorneles.gym_stock_control.exceptions.UnauthorizedException;
+import com.asafeorneles.gym_stock_control.repositories.RefreshTokenRepository;
 import com.asafeorneles.gym_stock_control.repositories.RoleRepository;
 import com.asafeorneles.gym_stock_control.repositories.UserRepository;
 import com.asafeorneles.gym_stock_control.security.CustomUserDetailsService;
@@ -24,8 +26,8 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.Set;
-import java.util.UUID;
 
 @Service
 public class AuthService {
@@ -43,6 +45,9 @@ public class AuthService {
     RoleRepository roleRepository;
 
     @Autowired
+    RefreshTokenRepository refreshTokenRepository;
+
+    @Autowired
     CustomUserDetailsService customUserDetailsService;
 
     @Autowired
@@ -53,7 +58,7 @@ public class AuthService {
 
     public LoginResponseDto login(LoginRequestDto loginRequestDto) {
 
-       Authentication authentication = authenticationManager.authenticate(
+        Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequestDto.username(),
                         loginRequestDto.password()
@@ -63,12 +68,24 @@ public class AuthService {
         String token = tokenService.getAccessToken(authentication);
         String refreshToken = tokenService.getRefreshToken(authentication);
 
-        return new LoginResponseDto(token, refreshToken, tokenService.getTokenExpiresIn());
+        User user = userRepository.findByUsername(loginRequestDto.username())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found by refresh token"));
+
+        RefreshToken refreshTokenEntity = RefreshToken.builder()
+                .token(refreshToken)
+                .revoked(false)
+                .expiresDate(Instant.now().plusSeconds(tokenService.getRefreshTokenExpiration()))
+                .user(user)
+                .build();
+
+        refreshTokenRepository.save(refreshTokenEntity);
+
+        return new LoginResponseDto(token, refreshToken, tokenService.getAccessTokenExpiration());
     }
 
     @Transactional
     public void register(RegisterRequestDto registerRequestDto) {
-        if (userRepository.existsByUsername(registerRequestDto.username())){
+        if (userRepository.existsByUsername(registerRequestDto.username())) {
             throw new BusinessConflictException("Username already in use. Please enter another username.");
         }
 
@@ -86,17 +103,26 @@ public class AuthService {
         userRepository.save(user);
     }
 
-    public LoginResponseDto refreshToken(RefreshTokenRequestDto refreshTokenRequestDto) {
 
-        Jwt jwt = jwtDecoder.decode(refreshTokenRequestDto.refreshToken());
-        if (!jwt.getClaim("type").equals("refresh")){
+    @Transactional
+    public LoginResponseDto refreshToken(RefreshTokenRequestDto refreshTokenRequestDto) {
+        String oldRefreshTokenString = refreshTokenRequestDto.refreshToken();
+        Jwt jwt = jwtDecoder.decode(oldRefreshTokenString);
+        if (!jwt.getClaim("type").equals("refresh")) {
             throw new UnauthorizedException("Invalid refresh token");
         }
 
-        UUID userId = UUID.fromString(jwt.getSubject());
+        RefreshToken oldRefreshTokenEntity = refreshTokenRepository.findByToken(oldRefreshTokenString)
+                .orElseThrow(() -> new ResourceNotFoundException("Refresh Token not found"));
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found by refresh token"));
+        if (oldRefreshTokenEntity.isRevoked()){
+            throw new UnauthorizedException("Refresh token is revoked.");
+        }
+
+        oldRefreshTokenEntity.setRevoked(true);
+        refreshTokenRepository.save(oldRefreshTokenEntity);
+
+        User user = oldRefreshTokenEntity.getUser();
 
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(user.getUsername());
 
@@ -107,9 +133,18 @@ public class AuthService {
         );
 
         String token = tokenService.getAccessToken(authentication);
-        String refreshToken = tokenService.getRefreshToken(authentication);
+        String newRefreshTokenString = tokenService.getRefreshToken(authentication);
 
-        return new LoginResponseDto(token, refreshToken, tokenService.getTokenExpiresIn());
+        RefreshToken newRefreshTokenEntity = RefreshToken.builder()
+                .token(newRefreshTokenString)
+                .revoked(false)
+                .expiresDate(Instant.now().plusSeconds(tokenService.getRefreshTokenExpiration()))
+                .user(user)
+                .build();
+
+        refreshTokenRepository.save(newRefreshTokenEntity);
+
+        return new LoginResponseDto(token, newRefreshTokenString, tokenService.getAccessTokenExpiration());
     }
 
 }
