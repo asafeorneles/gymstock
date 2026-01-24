@@ -52,6 +52,19 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK).body(loginResponseDto);
     }
 
+    @Operation(summary = "Logout the system")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Logout successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request data"),
+            @ApiResponse(responseCode = "401", description = "Unauthenticated user or Unauthorized Exception"),
+            @ApiResponse(responseCode = "500", description = "Unexpected server error")
+    })
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(@RequestBody RefreshTokenRequestDto refreshTokenRequestDto){
+        authService.logout(refreshTokenRequestDto);
+        return ResponseEntity.status(HttpStatus.OK).body("Logout successful");
+    }
+
     @Operation(summary = "Registers a user in the system")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "User registered successfully"),
@@ -66,12 +79,6 @@ public class AuthController {
     public ResponseEntity<String> register(@RequestBody @Valid RegisterRequestDto registerRequestDto){
         authService.register(registerRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
-    }
-
-    @PostMapping("/logout")
-    public ResponseEntity<String> logout(@RequestBody RefreshTokenRequestDto refreshTokenRequestDto){
-        authService.logout(refreshTokenRequestDto);
-        return ResponseEntity.status(HttpStatus.OK).body("Logout successful");
     }
 
 }
