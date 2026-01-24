@@ -146,7 +146,7 @@ public class AuthService {
     private void validateRefreshToken(String refreshTokenString) {
         try{
             Jwt jwt = jwtDecoder.decode(refreshTokenString);
-            if (!jwt.getClaim("type").equals("refresh")){
+            if (!"refresh".equals(jwt.getClaim("type"))){
                 throw new UnauthorizedException("Invalid token type");
             }
         } catch (JwtException e){
