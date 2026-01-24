@@ -24,7 +24,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtException;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -136,8 +135,8 @@ public class AuthService {
         RefreshToken refreshTokenEntity = refreshTokenRepository.findByToken(refreshTokenString)
                 .orElseThrow(() -> new ResourceNotFoundException("Refresh token not found"));
 
-        if (refreshTokenEntity.isRevoked()) {
-            return;
+        if (refreshTokenEntity.isRevoked()){
+            throw new UnauthorizedException("Refresh token is revoked.");
         }
 
         refreshTokenEntity.setRevoked(true);
