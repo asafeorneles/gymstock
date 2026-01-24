@@ -125,7 +125,7 @@ GET         /products        roduct:read
 *Obs: Lista resumida. A documentação completa está disponível via Swagger.*
   
 ## 🧪 Testes
-- O projeto conta atualmente com 98 testes unitários
+- O projeto conta atualmente com 108 testes unitários
 - Foco principal na camada de Service
 - Testes escritos com JUnit 5 e Mockito
 - Cobertura das principais regras de negócio
