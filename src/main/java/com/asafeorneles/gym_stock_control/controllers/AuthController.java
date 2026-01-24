@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,13 +39,33 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK).body(loginResponseDto);
     }
 
+    @Operation(summary = "Refresh token")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Token refreshed  successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request data"),
+            @ApiResponse(responseCode = "401", description = "Unauthenticated user or Unauthorized Exception"),
+            @ApiResponse(responseCode = "500", description = "Unexpected server error")
+    })
     @PostMapping("/refresh-token")
     public ResponseEntity<LoginResponseDto> refreshToken(@RequestBody RefreshTokenRequestDto refreshTokenRequestDto){
         LoginResponseDto loginResponseDto = authService.refreshToken(refreshTokenRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body(loginResponseDto);
     }
 
-    @Operation(summary = "Registers a user in the system.")
+    @Operation(summary = "Logout the system")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Logout successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request data"),
+            @ApiResponse(responseCode = "401", description = "Unauthenticated user or Unauthorized Exception"),
+            @ApiResponse(responseCode = "500", description = "Unexpected server error")
+    })
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(@RequestBody RefreshTokenRequestDto refreshTokenRequestDto){
+        authService.logout(refreshTokenRequestDto);
+        return ResponseEntity.status(HttpStatus.OK).body("Logout successful");
+    }
+
+    @Operation(summary = "Registers a user in the system")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "User registered successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid request data"),
@@ -54,9 +75,10 @@ public class AuthController {
             @ApiResponse(responseCode = "500", description = "Unexpected server error")
     })
     @PreAuthorize("hasAuthority('user:register')")
-    @PostMapping("/register") // Proteger depois
+    @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody @Valid RegisterRequestDto registerRequestDto){
         authService.register(registerRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
     }
+
 }
