@@ -20,6 +20,7 @@ Projeto pessoal/portfólio com objetivo de demonstrar domínio em backend Java m
 - Lombok
 - Bean Validation
 - Docker
+-  GitHub Actions (CI)
 
 ## 🧾 Funcionalidades
 - Gerenciamento completo de produtos e categorias
@@ -140,33 +141,63 @@ http://localhost:8080/swagger-ui/index.html#/
 ```
 
 ## ⚙️ Como Executar o Projeto 
-Pré-requisitos:
-- Java 17
-- Docker e Docker Compose
-- Maven
 
-### 🐳 Subindo o banco de dados com Docker:
+### 🐳 Rodando a aplicação com Docker:
+Este método sobe a aplicação completa (API + Banco de Dados) prontos para uso.
+
+#### **Pré-requisitos:**
+- Docker e Docker Compose instalados.
+
+### 1. Clone o repositório:
+
+```
+git clone https://github.com/asafeorneles/gymstock.git
+```
+### 2. Crie um arquivo docker-compose.yml na raiz (caso não exista) com o seguinte conteúdo, ou utilize o já existente no projeto:
+(O arquivo já está configurado para baixar a imagem pronta do Docker Hub)
 
 ```
 services:
   mysql:
     image: mysql:8.0.36
     container_name: mysql_gym_stock_control
+    restart: always
     environment:
+      TZ: America/Sao_Paulo
       MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: docker
+      MYSQL_PASSWORD: root
       MYSQL_DATABASE: gym_stock_control_api
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_TCP_PORT: 3306
     ports:
       - "3306:3306"
-    volumes:
-      - gym_stock_control_data:/var/lib/mysql
-
-volumes:
-  gym_stock_control_data:
+    expose:
+      - 3306
+    networks:
+      - gym-stock-network
+  gym_stock_control_api:
+    image: asafeorneles/gym-stock-control
+    restart: always
+    environment:
+      TZ: America/Sao_Paulo
+      SPRING.DATASOURCE.URL: jdbc:mysql://mysql:3306/gym_stock_control_api
+      SPRING.DATASOURCE.USERNAME: root
+      SPRING.DATASOURCE.PASSWORD: root
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+    networks:
+      - gym-stock-network
+networks:
+  gym-stock-network:
+    driver: bridge
 ```
 
-### ▶️ Executando a aplicação:
+### 3 Executando a aplicação:
 ```
-mvn spring-boot:run
+docker compose up -d
 ```
 Com a aplicação rodando, acesse a interface interativa do Swagger para testar os endpoints seguindo esses passos:
   
