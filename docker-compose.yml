@@ -1,4 +1,3 @@
-version: '3.9'
 services:
   mysql:
     image: mysql:8.0.36
@@ -21,7 +20,6 @@ services:
   gym_stock_control_api:
     image: asafeorneles/gym-stock-control
     restart: always
-    build: .
     environment:
       TZ: America/Sao_Paulo
       SPRING.DATASOURCE.URL: jdbc:mysql://mysql:3306/gym_stock_control_api
@@ -29,7 +27,6 @@ services:
       SPRING.DATASOURCE.PASSWORD: root
     ports:
       - "8080:8080"
-    command: mvn spring-boot:run
     depends_on:
       - mysql
     networks:
