@@ -11,7 +11,7 @@
 	<groupId>com.asafeorneles</groupId>
 	<artifactId>gymstock</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>gym-stock-control</name>
+	<name>gymstock</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
 	<licenses>
