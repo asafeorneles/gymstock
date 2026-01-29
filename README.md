@@ -153,7 +153,13 @@ Este projeto está totalmente containerizado e pode ser executado sem a necessid
 ```
 git clone https://github.com/asafeorneles/gymstock.git
 ```
-2. Execute a aplicação:
+
+2. Entre na pasta gymstock:
+```
+cd gymstock
+```
+
+3. Execute a aplicação:
 ```
 docker compose up -d
 ```
